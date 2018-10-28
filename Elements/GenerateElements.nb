@@ -1,0 +1,158 @@
+Notebook[{
+Cell["\<\
+This notebook has options set to \[OpenCurlyDoubleQuote]FileOutlineCache\
+\[CloseCurlyDoubleQuote]->False to reduce the amount of metadata inside it. \
+\>", "Text",ExpressionUUID->"d24e8e96-56db-4316-960a-cd9f2308c7aa"],
+
+Cell[BoxData[
+ RowBox[{"Get", "[", "\"\<AceGen`\>\"", "]"}]], "Input",
+ CellLabel->"In[36]:=",ExpressionUUID->"53a6dd32-548f-4fe2-b8ac-1d7fc5c38ce1"],
+
+Cell[CellGroupData[{
+
+Cell["Generate elements", \
+"Subsection",ExpressionUUID->"a87e56ab-b4ba-426d-9cd5-c88e1695c5af"],
+
+Cell[CellGroupData[{
+
+Cell["Conduction", \
+"Subsubsection",ExpressionUUID->"8742ae7e-0536-470c-a2c1-cb3b4a9436c3"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", " ", 
+   RowBox[{
+    RowBox[{"Suppress", " ", "messages", " ", "about", " ", "shadowing"}], 
+    ",", " ", 
+    RowBox[{
+     RowBox[{"probably", " ", "because", " ", "of", " ", "non"}], "-", 
+     RowBox[{"conventional", " ", "AceGen", " ", "context", " ", 
+      RowBox[{"structure", "."}]}]}]}], " ", "*)"}], "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{"Get", "[", 
+    RowBox[{"\"\<HeatConduction.wl\>\"", ",", 
+     RowBox[{"Path", "\[Rule]", 
+      RowBox[{"NotebookDirectory", "[", "]"}]}]}], "]"}], "//", 
+   "Quiet"}]}]], "Input",
+ CellLabel->"In[38]:=",ExpressionUUID->"0a262bd2-d6a7-4c96-be48-3c759f06c381"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"\<\"HeatTrans`Element`Conduction`\"\>", ",", "\<\"AceFEM`\"\>", 
+   ",", "\<\"AceCommon`\"\>", ",", "\<\"AceGen`\"\>", 
+   ",", "\<\"AceEnvironment`\"\>", ",", "\<\"System`\"\>"}], "}"}]], "Print",
+ CellLabel->
+  "During evaluation of \
+In[38]:=",ExpressionUUID->"b6b176c5-2992-4171-8859-c6270f4f8b5a"]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{"makeHeatConductionElement", "[", 
+  RowBox[{"\"\<D2\>\"", ",", "\"\<Q1\>\""}], "]"}]], "Input",
+ CellLabel->"In[4]:=",ExpressionUUID->"786abcb5-053d-4556-a946-b58c8b7e807f"],
+
+Cell[BoxData[
+ RowBox[{"makeHeatConductionElement", "[", 
+  RowBox[{"\"\<D2\>\"", ",", "\"\<Q2S\>\""}], "]"}]], "Input",
+ CellLabel->"In[5]:=",ExpressionUUID->"9b4313ae-7dc6-434c-9fd8-b2fb8f6b4c98"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Convection", \
+"Subsubsection",ExpressionUUID->"04241edb-ec99-4840-a809-661df51a2707"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"Get", "[", 
+   RowBox[{"\"\<HeatConvection.wl\>\"", ",", 
+    RowBox[{"Path", "\[Rule]", 
+     RowBox[{"NotebookDirectory", "[", "]"}]}]}], "]"}], "//", 
+  "Quiet"}]], "Input",ExpressionUUID->"98a5c141-c8b7-4dc6-8dd2-9a5ac6548b18"],
+
+Cell[BoxData[
+ RowBox[{"makeHeatConvectionElement", "[", 
+  RowBox[{"\"\<D2\>\"", ",", "\"\<L1\>\""}], "]"}]], "Input",
+ CellLabel->"In[8]:=",ExpressionUUID->"0f4f9e37-f23b-42c2-8052-edb0b71ffd93"],
+
+Cell[BoxData[
+ RowBox[{"makeHeatConvectionElement", "[", 
+  RowBox[{"\"\<D2\>\"", ",", "\"\<L2\>\""}], "]"}]], "Input",
+ CellLabel->"In[9]:=",ExpressionUUID->"03d378a6-8c18-49c8-9c86-7e617073acac"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Compile", \
+"Subsection",ExpressionUUID->"8787d608-22b7-4e2a-8d55-52a9d1ea1adb"],
+
+Cell[BoxData[
+ RowBox[{"SMTMakeDll", "/@", 
+  RowBox[{"FileNames", "[", "\"\<*.c\>\"", "]"}]}]], "Input",
+ CellLabel->"In[12]:=",ExpressionUUID->"7730e105-3145-4efb-b0f4-4be8559a5b05"],
+
+Cell[CellGroupData[{
+
+Cell["Copy libraries", \
+"Subsubsection",ExpressionUUID->"61c698c5-7e04-4ab5-8c78-56ecb4a931cf"],
+
+Cell[BoxData[
+ RowBox[{"libraries", "=", 
+  RowBox[{"With", "[", 
+   RowBox[{
+    RowBox[{"{", "\[IndentingNewLine]", 
+     RowBox[{"ext", "=", 
+      RowBox[{"Switch", "[", 
+       RowBox[{
+       "$OperatingSystem", ",", "\"\<Windows\>\"", ",", "\"\<.dll\>\"", ",", 
+        "\"\<Unix\>\"", ",", "\"\<.so\>\"", ",", "\"\<MacOSX\>\"", ",", 
+        "\"\<.dylib\>\""}], "]"}]}], "\[IndentingNewLine]", "}"}], ",", 
+    "\[IndentingNewLine]", 
+    RowBox[{"FileNames", "[", 
+     RowBox[{
+      RowBox[{"\"\<*\>\"", "<>", "ext"}], ",", 
+      RowBox[{"NotebookDirectory", "[", "]"}]}], "]"}]}], 
+   "\[IndentingNewLine]", "]"}]}]], "Input",
+ CellLabel->"In[13]:=",ExpressionUUID->"07419c92-1596-4f9c-a340-cdf52315ee8d"],
+
+Cell[BoxData[
+ RowBox[{"With", "[", 
+  RowBox[{
+   RowBox[{"{", "\[IndentingNewLine]", 
+    RowBox[{"dir", "=", 
+     RowBox[{"FileNameJoin", "[", 
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"ParentDirectory", "@", 
+         RowBox[{"NotebookDirectory", "[", "]"}]}], ",", 
+        "\"\<LibraryResources\>\"", ",", "$SystemID"}], "}"}], "]"}]}], 
+    "\[IndentingNewLine]", "}"}], ",", "\[IndentingNewLine]", 
+   RowBox[{"Map", "[", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"(", "\[IndentingNewLine]", 
+       RowBox[{
+        RowBox[{"CopyFile", "[", 
+         RowBox[{"#", ",", 
+          RowBox[{"FileNameJoin", "[", 
+           RowBox[{"{", 
+            RowBox[{"dir", ",", 
+             RowBox[{"FileNameTake", "[", "#", "]"}]}], "}"}], "]"}], ",", 
+          RowBox[{"OverwriteTarget", "\[Rule]", "True"}]}], "]"}], ";", 
+        "\[IndentingNewLine]", 
+        RowBox[{"DeleteFile", "[", "#", "]"}], ";"}], "\[IndentingNewLine]", 
+       ")"}], "&"}], ",", "\[IndentingNewLine]", "libraries"}], 
+    "\[IndentingNewLine]", "]"}]}], "\[IndentingNewLine]", "]"}]], "Input",
+ CellLabel->"In[14]:=",ExpressionUUID->"075b6b36-b17d-4fa1-adb3-3c24003cab36"]
+}, Open  ]]
+}, Open  ]]
+},
+WindowSize->{936, 1030},
+WindowMargins->{{Automatic, -6}, {Automatic, 3}},
+PrivateNotebookOptions->{"FileOutlineCache"->False},
+FrontEndVersion->"11.3 for Microsoft Windows (64-bit) (March 6, 2018)",
+StyleDefinitions->"Default.nb"
+]
