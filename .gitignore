@@ -1,0 +1,9 @@
+# Ignore files related to element generation
+*.dll
+*.dylib
+*.so
+Elements/AceShare
+Elements/*.c
+
+# Ignore stuff related to building paclet
+build
