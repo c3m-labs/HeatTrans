@@ -18,8 +18,6 @@ Cell[CellGroupData[{
 Cell["Conduction", \
 "Subsubsection",ExpressionUUID->"8742ae7e-0536-470c-a2c1-cb3b4a9436c3"],
 
-Cell[CellGroupData[{
-
 Cell[BoxData[
  RowBox[{
   RowBox[{"(*", " ", 
@@ -37,16 +35,6 @@ Cell[BoxData[
       RowBox[{"NotebookDirectory", "[", "]"}]}]}], "]"}], "//", 
    "Quiet"}]}]], "Input",
  CellLabel->"In[38]:=",ExpressionUUID->"0a262bd2-d6a7-4c96-be48-3c759f06c381"],
-
-Cell[BoxData[
- RowBox[{"{", 
-  RowBox[{"\<\"HeatTrans`Element`Conduction`\"\>", ",", "\<\"AceFEM`\"\>", 
-   ",", "\<\"AceCommon`\"\>", ",", "\<\"AceGen`\"\>", 
-   ",", "\<\"AceEnvironment`\"\>", ",", "\<\"System`\"\>"}], "}"}]], "Print",
- CellLabel->
-  "During evaluation of \
-In[38]:=",ExpressionUUID->"b6b176c5-2992-4171-8859-c6270f4f8b5a"]
-}, Open  ]],
 
 Cell[BoxData[
  RowBox[{"makeHeatConductionElement", "[", 
@@ -116,7 +104,8 @@ Cell[BoxData[
       RowBox[{"\"\<*\>\"", "<>", "ext"}], ",", 
       RowBox[{"NotebookDirectory", "[", "]"}]}], "]"}]}], 
    "\[IndentingNewLine]", "]"}]}]], "Input",
- CellLabel->"In[13]:=",ExpressionUUID->"07419c92-1596-4f9c-a340-cdf52315ee8d"],
+ CellLabel->
+  "In[132]:=",ExpressionUUID->"07419c92-1596-4f9c-a340-cdf52315ee8d"],
 
 Cell[BoxData[
  RowBox[{"With", "[", 
@@ -130,23 +119,32 @@ Cell[BoxData[
          RowBox[{"NotebookDirectory", "[", "]"}]}], ",", 
         "\"\<LibraryResources\>\"", ",", "$SystemID"}], "}"}], "]"}]}], 
     "\[IndentingNewLine]", "}"}], ",", "\[IndentingNewLine]", 
-   RowBox[{"Map", "[", "\[IndentingNewLine]", 
-    RowBox[{
+   RowBox[{
+    RowBox[{"If", "[", "\[IndentingNewLine]", 
      RowBox[{
-      RowBox[{"(", "\[IndentingNewLine]", 
-       RowBox[{
-        RowBox[{"CopyFile", "[", 
-         RowBox[{"#", ",", 
-          RowBox[{"FileNameJoin", "[", 
-           RowBox[{"{", 
-            RowBox[{"dir", ",", 
-             RowBox[{"FileNameTake", "[", "#", "]"}]}], "}"}], "]"}], ",", 
-          RowBox[{"OverwriteTarget", "\[Rule]", "True"}]}], "]"}], ";", 
-        "\[IndentingNewLine]", 
-        RowBox[{"DeleteFile", "[", "#", "]"}], ";"}], "\[IndentingNewLine]", 
-       ")"}], "&"}], ",", "\[IndentingNewLine]", "libraries"}], 
-    "\[IndentingNewLine]", "]"}]}], "\[IndentingNewLine]", "]"}]], "Input",
- CellLabel->"In[14]:=",ExpressionUUID->"075b6b36-b17d-4fa1-adb3-3c24003cab36"]
+      RowBox[{"Not", "@", 
+       RowBox[{"DirectoryQ", "[", "dir", "]"}]}], ",", "\[IndentingNewLine]", 
+      RowBox[{"CreateDirectory", "[", 
+       RowBox[{"dir", ",", 
+        RowBox[{"CreateIntermediateDirectories", "\[Rule]", "True"}]}], 
+       "]"}]}], "\[IndentingNewLine]", "]"}], ";", "\[IndentingNewLine]", 
+    RowBox[{"Map", "[", "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"(", "\[IndentingNewLine]", 
+        RowBox[{
+         RowBox[{"CopyFile", "[", 
+          RowBox[{"#", ",", 
+           RowBox[{"FileNameJoin", "[", 
+            RowBox[{"{", 
+             RowBox[{"dir", ",", 
+              RowBox[{"FileNameTake", "[", "#", "]"}]}], "}"}], "]"}], ",", 
+           RowBox[{"OverwriteTarget", "\[Rule]", "True"}]}], "]"}], ";", 
+         "\[IndentingNewLine]", 
+         RowBox[{"DeleteFile", "[", "#", "]"}]}], "\[IndentingNewLine]", 
+        ")"}], "&"}], ",", "\[IndentingNewLine]", "libraries"}], 
+     "\[IndentingNewLine]", "]"}]}]}], "\[IndentingNewLine]", "]"}]], "Input",
+ CellLabel->"In[138]:=",ExpressionUUID->"075b6b36-b17d-4fa1-adb3-3c24003cab36"]
 }, Open  ]]
 }, Open  ]]
 },
@@ -156,3 +154,4 @@ PrivateNotebookOptions->{"FileOutlineCache"->False},
 FrontEndVersion->"11.3 for Microsoft Windows (64-bit) (March 6, 2018)",
 StyleDefinitions->"Default.nb"
 ]
+
