@@ -194,19 +194,21 @@ setup[mesh_,material_,opts:OptionsPattern[]]:=Module[
 analysis//ClearAll
 
 analysis//Options={
-	"InitialTemperature"->500,"AmbientTemperature"->25,"ConvectionCoefficient"->20.
+	"InitialTemperature"->500,"AmbientTemperature"->20,"ConvectionCoefficient"->20.
 	};
 
 analysis[mesh_,time_,timeStep_,opts:OptionsPattern[]]:=Module[
-	{initialTemp,convCoeff,allTimeSteps,reaped,data},
+	{initialTemp,ambientTemp,convCoeff,allTimeSteps,reaped,data},
 	
 	initialTemp=OptionValue["InitialTemperature"];
+	ambientTemp=OptionValue["AmbientTemperature"];
 	convCoeff=Clip[OptionValue["ConvectionCoefficient"],{0.,Infinity}];
 	
 	allTimeSteps=Range[0.,time,timeStep];
 	
 	SMTAddInitialBoundary["T",1->initialTemp,"Type"->"InitialCondition"];
 	SMTDomainData["surface","Data","h*"->convCoeff];
+	SMTDomainData["surface","Data","Tamb*"->ambientTemp];
 	
 	reaped=Reap@Do[
 		SMTNextStep["t"->t];
