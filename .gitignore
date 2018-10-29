@@ -2,8 +2,10 @@
 *.dll
 *.dylib
 *.so
-Elements/AceShare
 Elements/*.c
+
+# Ignore all AceShare directories
+AceShare
 
 # Ignore stuff related to building paclet
 build
