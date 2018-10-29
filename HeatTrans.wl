@@ -34,6 +34,7 @@ BeginPackage["HeatTrans`",{"NDSolve`FEM`","AceFEM`","AceCommon`"}];
 
 HeatTransfer;
 MakeMesh;
+$DefaultMaterial;
 
 
 (* ::Section::Closed:: *)
@@ -145,6 +146,14 @@ MakeMesh[region_,order:(1|2)]:=Module[
 
 (* ::Subsubsection::Closed:: *)
 (*Setup*)
+
+
+$DefaultMaterial//ClearAll
+
+$DefaultMaterial::usage="$DefaultMaterial represents a set of default material properties.";
+
+(* This is a utility symbol, useful for demonstration purpose. Units system is (kg,m,s). *)
+$DefaultMaterial=<|"Conductivity"->55,"Density"->7800,"SpecificHeat"->470.|>;
 
 
 assembleDomainData//ClearAll
