@@ -169,11 +169,11 @@ assembleDomainData[material_Association,other_:{}]:=Join[{
 
 setup//ClearAll
 
-setup//Options={"SaveResultsTo"->False};
+setup//Options={"SaveResultsTo"->False,"Console"->Automatic};
 
 (* We assume that profile mesh is always made of QuadElement (Q1 or Q2S topology) *)
 setup[mesh_,material_,opts:OptionsPattern[]]:=Module[
-	{order,solidElement,surfaceElement,resultsFile},
+	{order,solidElement,surfaceElement,resultsFile,consoleQ},
 	(* Name of results file can be some given string or default name.*)
 	resultsFile=ReplaceAll[
 		OptionValue["SaveResultsTo"],
@@ -184,8 +184,9 @@ setup[mesh_,material_,opts:OptionsPattern[]]:=Module[
 		1-> {"HeatConductionD2Q1","HeatConvectionD2L1"},
 		2-> {"HeatConductionD2Q2S","HeatConvectionD2L2"}
 	};
+	consoleQ=TrueQ[OptionValue["Console"]/.(Automatic->Not@$Notebooks)];
 	
-	SMTInputData[];
+	SMTInputData["Console"->consoleQ];
 	SMTAddDomain[{
 		{"solid",solidElement,assembleDomainData[material],"Source"->getLibrary[solidElement]},
 		{"surface",surfaceElement,{"h *"->10.,"Tamb *"->25.},"Source"->getLibrary[surfaceElement]}
