@@ -61,14 +61,39 @@ $packageDirectory=ReplaceAll[
 ];
 
 
-(* Find element library (DLL or equivalent). *)
-getLibrary[name_]:=With[{
-	dir=FileNameJoin[{$packageDirectory,"LibraryResources",$SystemID}]
-	},
-	First[
-		FileNames[name<>".*",dir],
-		Message[getLibrary::noopen,name];Abort[]
-	]
+(* This finds element library (.dll or similar) in appropriate directory.
+If it doesn't exist it compiles it from source (.C file). This avoids problems
+with compilation of elements for other systems, assuming users have appropriate 
+compiler installed. *)
+
+getLibrary[name_]:=Module[
+	{ext,srcDir,libDir,src,lib},
+	ext=Switch[$SystemID,
+		"Windows-x86-64",".W64.dll",
+		"Linux-x86-64",".L64.so",
+		"MacOSX-x86-64",".M64.dylib"
+	];
+	
+	srcDir=FileNameJoin[{$packageDirectory,"LibraryResources","Source"}];
+	libDir=FileNameJoin[{$packageDirectory,"LibraryResources",$SystemID}];
+	src=FileNameJoin[{srcDir,name<>".c"}];
+	lib=FileNameJoin[{libDir,name<>ext}];
+	
+	If[
+		Not@FileExistsQ[src],
+		Message[getLibrary::noopen,src];Abort[]
+	];
+	
+	If[Not@DirectoryQ[libDir],CreateDirectory[libDir]];
+	(* If element library doesn't exist, compile it from source (.C) 
+	and copy it to appropriate directory. *)
+	If[
+		Not@FileExistsQ[lib],
+		SMTMakeDll@src;
+		CopyFile[FileNameJoin[{srcDir,FileNameTake@lib}],lib];
+		DeleteFile[FileNameJoin[{srcDir,FileNameTake@lib}]]
+	];
+	lib
 ]
 
 
