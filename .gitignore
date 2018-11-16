@@ -3,6 +3,7 @@
 *.dylib
 *.so
 Elements/*.c
+LibraryResources
 
 # Ignore all AceShare directories
 AceShare
