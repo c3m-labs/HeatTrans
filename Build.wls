@@ -1,6 +1,10 @@
 #!/usr/bin/env wolframscript
 (* ::Package:: *)
 
+(* ::Subsubsection:: *)
+(*Git functions*)
+
+
 getGitRevision[dir_]:=Module[{description},
 	SetDirectory[dir];
 	(* For meaning of this see: https://git-scm.com/docs/git-describe *)
@@ -25,6 +29,10 @@ getGitCommitCount[dir_]:=Module[{value},
 ]
 
 
+(* ::Subsubsection:: *)
+(*Build procedure*)
+
+
 $name="HeatTrans";
 (* Get the distribution directory by using this notebook\[CloseCurlyQuote]s directory. *)
 $source=If[$Notebooks,NotebookDirectory[],Directory[]];
@@ -32,8 +40,19 @@ $source=If[$Notebooks,NotebookDirectory[],Directory[]];
 $target=FileNameJoin[{$source,"build",$name}];
 
 
-Module[
-	{directories,original,modified},
+$helpMessage=("  Usage: Build.wls [options]
+
+  Options:
+    -h, --help                   Output usage information
+    --release                    Build public release")
+
+
+Module[{directories},
+	If[
+		MemberQ[Rest@$ScriptCommandLine,"/?"|"-h"|"--help"],
+		Print[$helpMessage];Quit[1]
+	];
+	
 	If[
 		Not@DirectoryQ[$target],
 		CreateDirectory[$target,CreateIntermediateDirectories->True]
@@ -61,20 +80,23 @@ Module[
 		CopyDirectory[FileNameJoin[{$source,#}],FileNameJoin[{$target,#}]]&,
 		directories
 	];
-	
+]
+
+
+Module[{original, modified,noCommits,revision,internalQ},
+
 	original=Import[FileNameJoin[{$source,"PacletInfo.m"}]];
+	noCommits=getGitCommitCount[$source];
+	revision=getGitRevision[$source];
+	internalQ=Not@MemberQ[Rest@$ScriptCommandLine,"--release"];
+		
 	(* Description of git repository (git describe ...) returns a string that cannot 
 	be used as BuildNumber because only integers are accepted. 
 	Otherwise PackPaclet returns $Failed and procedure fails. Instead now commit count is used. *)
-	modified=With[{
-		noCommits=getGitCommitCount[$source],
-		revision=getGitRevision[$source]
-		},
-		Fold[
+	modified=Fold[
 			Insert[#1,#2,4]&,
 			original,
-			{Internal->True,BuildNumber->noCommits,"Hash"->revision}
-		]
+			{Internal->internalQ,BuildNumber->noCommits,"Hash"->revision}
 	];
 	
 	Export[
@@ -85,22 +107,22 @@ Module[
 ]
 
 
-Module[
-	{pacletPath,newPaclet},
+Module[{pacletPath,newPaclet},
 	Needs["PacletManager`"];
-	(* Change into the build directory. *)	
+	
+	(* Change into the build directory and create the paclet. *)	
 	SetDirectory[FileNameJoin[{$source,"build"}]];
-	(*Create the paclet*)
 	pacletPath=PackPaclet[$name];
 	ResetDirectory[];
+	
 	(*Uninstall a possibly old version. *)
 	If[PacletFind[$name]=!={},PacletUninstall[$name]];
-	(*Install the paclet*)
 	newPaclet=PacletInstall[pacletPath];
 	RebuildPacletData[];
+	
 	If[
 		Length@PacletFind["HeatTrans"]===1,
-		Print[0],
-		Print[1]
+		Print["Build succesfull."];Quit[0],
+		Print["Build failed."];Quit[1]
 	]
 ]
