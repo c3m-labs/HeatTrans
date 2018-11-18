@@ -3,18 +3,21 @@
 
 Print["  Running \"HeatTrans\" tests..."];
 
-(* Modify paths depending from which directory the script is started. *)
-PacletDirectoryAdd[ParentDirectory@Directory[]];
+(* Modify paths depending from which directory the script is started.
+By default we assume script is started from git root directory. *)
+PacletDirectoryAdd[Directory[]];
 Get["HeatTrans`"];
 
 With[{
-	tr=TestReport[FileNameJoin[{Directory[],"Tests.wl"}]]
+	tr=TestReport[FileNameJoin[{Directory[],"Tests","Tests.wl"}]]
 	},
-	Exit@If[
-		TrueQ[tr["AllTestsSucceeded"]],
-		Print["  All tests passed in ",ToString@QuantityMagnitude@tr["TimeElapsed"]," seconds."];
-		0, (* exit code if all test pass *)
-		Print["  Tests failed! IDs: ",tr["TestsFailedIndices"]];
-		1 (* exit code if any test fails *)
+	If[
+		TrueQ@tr["AllTestsSucceeded"]
+		,
+		Print["\n","  All tests passed in ",ToString@QuantityMagnitude@tr["TimeElapsed"]," seconds."];
+		Quit[0] (* exit code if all test pass *)
+		,
+		Print["\n","  Tests failed! IDs: ",tr["TestsFailedIndices"]];
+		Quit[1] (* exit code if any test fails *)
 	]
 ]
