@@ -37,7 +37,7 @@ MakeMesh;
 $DefaultMaterial;
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*Code*)
 
 
@@ -97,7 +97,7 @@ getLibrary[name_]:=Module[
 ]
 
 
-(* ::Subsection::Closed:: *)
+(* ::Subsection:: *)
 (*HeatTransfer*)
 
 
@@ -272,7 +272,7 @@ analysis[mesh_,time_,timeStep_,opts:OptionsPattern[]]:=Module[
 ]
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*Main*)
 
 
@@ -300,8 +300,8 @@ HeatTransfer[region_,time_,material_,opts:OptionsPattern[]]:=Module[
 	
 	mesh=MakeMesh[region,order];
 	
-	setup[mesh,material,FilterRules[{opts},Options@setup]];
-	analysis[mesh,time,timeStep,FilterRules[{opts},Options@analysis]]
+	setup[mesh,material,FilterRules[Join[{opts},Options[HeatTransfer]],Options@setup]];
+	analysis[mesh,time,timeStep,FilterRules[Join[{opts},Options[HeatTransfer]],Options@analysis]]
 ]
 
 
