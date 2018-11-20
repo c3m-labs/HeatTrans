@@ -1,20 +1,37 @@
 #!/usr/bin/env wolframscript
 (* ::Package:: *)
 
+$helpMessage=("  Usage: RunTests.wls [options]
+
+  Options:
+    -h, --help                   Output usage information
+    --console                    Print CDriver messages")
+
+
+If[
+	MemberQ[Rest@$ScriptCommandLine,"/?"|"-h"|"--help"],
+	Print[$helpMessage];Quit[1]
+];
+
+
 Print["  Running \"HeatTrans\" tests..."];
 
 (* Modify paths depending from which directory the script is started.
 By default we assume script is started from git root directory. *)
-PacletDirectoryAdd[Directory[]];
+PacletDirectoryAdd@Directory[];
 Get["HeatTrans`"];
 
-With[{
-	tr=TestReport[FileNameJoin[{Directory[],"Tests","Tests.wl"}]]
-	},
+SetOptions[HeatTransfer,"Console"->MemberQ[Rest@$ScriptCommandLine,"--console"]];
+
+Module[
+	{tr,time},
+	tr=TestReport[FileNameJoin[{Directory[],"Tests","Tests.wl"}]];
+	time=QuantityMagnitude@tr["TimeElapsed"];
+	
 	If[
 		TrueQ@tr["AllTestsSucceeded"]
 		,
-		Print["\n","  All tests passed in ",ToString@QuantityMagnitude@tr["TimeElapsed"]," seconds."];
+		Print["\n","  All tests passed in ",ToString@time," seconds."];
 		Quit[0] (* exit code if all test pass *)
 		,
 		Print["\n","  Tests failed! IDs: ",tr["TestsFailedIndices"]];
