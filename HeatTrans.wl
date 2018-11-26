@@ -37,7 +37,7 @@ MakeMesh;
 $DefaultMaterial;
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*Code*)
 
 
@@ -97,7 +97,7 @@ getLibrary[name_]:=Module[
 ]
 
 
-(* ::Subsection:: *)
+(* ::Subsection::Closed:: *)
 (*HeatTransfer*)
 
 
@@ -106,8 +106,7 @@ getLibrary[name_]:=Module[
 
 
 (* This function is copied from FEMAddOns package ( https://github.com/WolframResearch/FEMAddOns ). *)
-laplacianElementMeshSmoothing[mesh_] := 
-Block[
+laplacianElementMeshSmoothing[mesh_]:=Block[
 	{n, vec, mat, adjacencymatrix2, mass2, laplacian2, typoOpt, 
 	bndvertices2, interiorvertices, stiffness, load, newCoords}, 
 
@@ -151,9 +150,17 @@ Block[
 MakeMesh//ClearAll
 
 MakeMesh::usage="MakeMesh[reg,ord] makes ElementMesh from 2D region reg with \"MeshoOrder\"->ord.";
+MakeMesh::badreg="Region should be a bounded region in 2D.";
+
+MakeMesh//SyntaxInformation={"ArgumentsPattern"->{_,_}};
 
 MakeMesh[region_,order:(1|2)]:=Module[
 	{triMesh,maxBound},
+	
+	If[
+		Not[BoundedRegionQ[region]&&RegionDimension[region]==2],
+		Message[MakeMesh::badreg];Return[$Failed]
+	];
 	
 	maxBound=Max[Differences/@RegionBounds[region]];
 	triMesh=ToElementMesh[
@@ -162,6 +169,7 @@ MakeMesh[region_,order:(1|2)]:=Module[
 		MaxCellMeasure->{"Length"->maxBound/10},
 		AccuracyGoal->2
 	];
+	
 	MeshOrderAlteration[
 		laplacianElementMeshSmoothing@SMTTriangularToQuad[triMesh],
 		order
@@ -229,17 +237,17 @@ setup[mesh_,material_,opts:OptionsPattern[]]:=Module[
 analysis//ClearAll
 
 analysis//Options={
-	"InitialTemperature"->500,"AmbientTemperature"->20,"ConvectionCoefficient"->20.
+	"InitialTemperature"->100.,"AmbientTemperature"->20.,"ConvectionCoefficient"->20.
 	};
 
-analysis[mesh_,time_,timeStep_,opts:OptionsPattern[]]:=Module[
-	{initialTemp,ambientTemp,convCoeff,allTimeSteps,reaped,data},
+analysis[mesh_,time_,noSteps_,opts:OptionsPattern[]]:=Module[
+	{initialTemp,ambientTemp,convCoeff,timeSteps,reaped,data},
 	
 	initialTemp=OptionValue["InitialTemperature"];
 	ambientTemp=OptionValue["AmbientTemperature"];
 	convCoeff=Clip[OptionValue["ConvectionCoefficient"],{0.,Infinity}];
 	
-	allTimeSteps=Range[0.,time,timeStep];
+	timeSteps=Subdivide[0.,time,noSteps];
 	
 	SMTAddInitialBoundary["T",1->initialTemp,"Type"->"InitialCondition"];
 	SMTDomainData["surface","Data","h*"->convCoeff];
@@ -256,15 +264,15 @@ analysis[mesh_,time_,timeStep_,opts:OptionsPattern[]]:=Module[
 			MatchQ[SMTSession[[8]],1|2],
 			SMTPut[SMTIData["Step"],SMTRData["Time"]]
 		];
-		Sow[SMTPostData["Temperature"]]
+		Sow@SMTPostData["Temperature"]
 		,
-		{t,allTimeSteps}
+		{t,timeSteps}
 	];
 	
 	data=Transpose[Last@reaped,{2,1,3}];
 	(* Return InterpolatingFunction of temperature field, like NDSolve would.*)
 	ElementMeshInterpolation[
-		{allTimeSteps,mesh},
+		{timeSteps,mesh},
 		data,
 		InterpolationOrder->All,
 		"ExtrapolationHandler"->{Function[Indeterminate],"WarningMessage"->False}
@@ -272,25 +280,27 @@ analysis[mesh_,time_,timeStep_,opts:OptionsPattern[]]:=Module[
 ]
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*Main*)
 
 
 HeatTransfer//ClearAll
 
-HeatTransfer::usage="HeatTransfer[reg, time, material] simulates 2D heat transfer.";
-HeatTransfer::badreg="Profile cross-section should be bounded region in 2D.";
+HeatTransfer::usage="HeatTransfer[reg, time, material] simulates heat transfer on 2D Region reg.
+HeatTransfer[mesh, time, material] accepts ElementMesh mesh as description of geometry.";
+HeatTransfer::quadElms="\"MeshElements\" of given ElementMesh should be QuadElement type.";
+HeatTransfer::timeSteps="Number of time steps `1` should be a positive integer.";
 
 HeatTransfer//Options=Sort@Join[
-	Flatten[Options/@{setup,analysis}],
-	{"TimeStep"->Automatic,"MeshOrder"->1}
+	Options@setup,Options@analysis,
+	{"NoTimeSteps"->Automatic,"MeshOrder"->1}
 ];
 
 HeatTransfer//SyntaxInformation={"ArgumentsPattern"->{_,_,_,OptionsPattern[HeatTransfer]}};
 
-HeatTransfer[region_,time_,material_,opts:OptionsPattern[]]:=Module[
-	{mesh,timeStep,order},
-	timeStep=OptionValue["TimeStep"]/.Automatic->1.;
+HeatTransfer[region_?RegionQ,time_,material_,opts:OptionsPattern[]]:=Module[
+	{mesh,order},
+	
 	order=OptionValue["MeshOrder"]/.Automatic->1;
 	
 	If[
@@ -299,9 +309,32 @@ HeatTransfer[region_,time_,material_,opts:OptionsPattern[]]:=Module[
 	];
 	
 	mesh=MakeMesh[region,order];
+	If[
+		MatchQ[mesh,_ElementMesh],
+		HeatTransfer[mesh,time,material,opts],
+		$Failed
+	]
+]
+
+(* ------------------------------------------------------------------------ *)
+
+HeatTransfer[mesh_ElementMesh,time_,material_,opts:OptionsPattern[]]:=Module[
+	{noSteps},
+	
+	noSteps=OptionValue["NoTimeSteps"]/.Automatic->10;
+	If[
+		MatchQ[noSteps,Except[_Integer?Positive]],
+		Message[HeatTransfer::timeSteps,noSteps];Return[$Failed]
+	];
+	
+	(* Currently we insist that only quadrilateral elements are used.*)
+	If[
+		(Head/@mesh["MeshElements"])=!={QuadElement},
+		Message[HeatTransfer::quadElms];Return[$Failed]
+	];
 	
 	setup[mesh,material,FilterRules[Join[{opts},Options[HeatTransfer]],Options@setup]];
-	analysis[mesh,time,timeStep,FilterRules[Join[{opts},Options[HeatTransfer]],Options@analysis]]
+	analysis[mesh,time,noSteps,FilterRules[Join[{opts},Options[HeatTransfer]],Options@analysis]]
 ]
 
 
@@ -317,3 +350,10 @@ End[]; (* "`Private`" *)
 
 
 EndPackage[];
+
+
+HeatTransfer::version="Recommended AceFEM version is at least `1`.";
+
+With[{ver=6.912},
+	If[TrueQ[ver<SMCSession[[16]]],Message[HeatTransfer::version,ToString@ver]]
+]

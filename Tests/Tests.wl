@@ -47,15 +47,73 @@ VerificationTest[
 ]
 
 
+VerificationTest[
+	MakeMesh[Disk[],"badValue"],
+	MakeMesh[Disk[],"badValue"],
+	TestID->"MakeMesh_badMeshOrder"
+]
+
+
+VerificationTest[
+	MakeMesh[Ball[],1],
+	$Failed,
+	\!\(\*
+TagBox[
+RowBox[{"{", 
+StyleBox[
+RowBox[{"MakeMesh", "::", "badreg"}], "MessageName"], "}"}],
+Short[#, Rational[2, 3]]& ]\),
+	TestID->"MakeMesh_fail_3D_region"
+]
+
+
+VerificationTest[
+	MakeMesh[HalfPlane[{{0,0},{1,0}},{0,1}],1],
+	$Failed,
+	\!\(\*
+TagBox[
+RowBox[{"{", 
+StyleBox[
+RowBox[{"MakeMesh", "::", "badreg"}], "MessageName"], "}"}],
+Short[#, Rational[2, 3]]& ]\),
+	TestID->"MakeMesh_fail_unbounded_region"
+]
+
+
 (* ::Subsection::Closed:: *)
 (*HeatTransfer*)
 
 
 VerificationTest[
-	HeatTransfer[Disk[],10,$DefaultMaterial],
+	HeatTransfer[Disk[],1,$DefaultMaterial,"NoTimeSteps"->2],
 	_InterpolatingFunction,
 	SameTest->MatchQ,
 	TestID->"HeatTransfer_success"
+]
+
+
+VerificationTest[
+	HeatTransfer[ToElementMesh@Disk[],1,$DefaultMaterial],
+	$Failed,
+	\!\(\*
+TagBox[
+RowBox[{"{", 
+StyleBox[
+RowBox[{"HeatTransfer", "::", "quadElms"}], "MessageName"], "}"}],
+Short[#, Rational[2, 3]]& ]\),
+	TestID->"HeatTransfer_fail_triangleElements"
+]
+
+
+VerificationTest[
+	HeatTransfer[Disk[],1,$DefaultMaterial,"NoTimeSteps"->-2],
+	$Failed,
+	\!\(\*
+TagBox[
+RowBox[{"{", 
+RowBox[{"HeatTransfer", "::", "timeSteps"}], "}"}],
+Short[#, Rational[2, 3]]& ]\),
+	TestID->"HeatTransfer_fail_noTimeSteps"
 ]
 
 
