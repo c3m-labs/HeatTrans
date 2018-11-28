@@ -68,7 +68,7 @@ Module[{directories},
 	];
 	(* Delete old and copy the new source directories. 
 	"Documentation" directory is already created by documentation build procedure. *)
-	directories={"FronEnd","Kernel","LibraryResources"};
+	directories={"FrontEnd","Kernel","LibraryResources"};
 	Map[
 		If[
 			FileExistsQ[FileNameJoin[{$target,#}]],

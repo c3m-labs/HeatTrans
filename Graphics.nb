@@ -10,10 +10,13 @@ Cell[BoxData[
   RowBox[{
    RowBox[{"PacletDirectoryAdd", "@", 
     RowBox[{"NotebookDirectory", "[", "]"}]}], "\[IndentingNewLine]", 
-   RowBox[{
-   "Get", "[", "\"\<HeatTrans`\>\"", 
-    "]"}]}]}]], \
-"Input",ExpressionUUID->"0ecb9a51-289b-45b0-9f28-c6fbdc0c37eb"],
+   RowBox[{"Get", "[", "\"\<HeatTrans`\>\"", "]"}]}]}]], "Input",
+ CellLabel->"In[3]:=",ExpressionUUID->"0ecb9a51-289b-45b0-9f28-c6fbdc0c37eb"],
+
+Cell[CellGroupData[{
+
+Cell["Logo", \
+"Subsubsection",ExpressionUUID->"a1488863-7bba-4b9c-8f35-d7cf5211356c"],
 
 Cell[BoxData[
  RowBox[{"reg", "=", 
@@ -28,28 +31,14 @@ Cell[BoxData[
     RowBox[{"Axes", "\[Rule]", "True"}], ",", "\[IndentingNewLine]", 
     RowBox[{"ImageSize", "\[Rule]", "600"}]}], "\[IndentingNewLine]", 
    "]"}]}]], "Input",
- CellLabel->
-  "In[215]:=",ExpressionUUID->"e9d6197c-0333-47af-8b53-91ef7fafaf44"],
-
-Cell[BoxData[
- RowBox[{
-  RowBox[{"material", "=", 
-   RowBox[{"<|", 
-    RowBox[{
-     RowBox[{"\"\<Conductivity\>\"", "\[Rule]", "55"}], ",", 
-     RowBox[{"\"\<Density\>\"", "->", "7800"}], ",", 
-     RowBox[{"\"\<SpecificHeat\>\"", "\[Rule]", "470."}]}], "|>"}]}], 
-  ";"}]], "Input",
- CellLabel->
-  "In[180]:=",ExpressionUUID->"5d80e034-750d-4780-a0da-319b7f5129df"],
+ CellLabel->"In[5]:=",ExpressionUUID->"e9d6197c-0333-47af-8b53-91ef7fafaf44"],
 
 Cell[BoxData[
  RowBox[{"int", "=", 
   RowBox[{"HeatTransfer", "[", 
-   RowBox[{"reg", ",", " ", "200", ",", " ", "material", ",", 
-    RowBox[{"\"\<TimeStep\>\"", "\[Rule]", "10"}]}], "]"}]}]], "Input",
- CellLabel->
-  "In[184]:=",ExpressionUUID->"9b56f8d8-08e6-4ec1-9115-7c696e7b2a7b"],
+   RowBox[{"reg", ",", " ", "200", ",", " ", "$DefaultMaterial", ",", 
+    RowBox[{"\"\<NoTimeSteps\>\"", "\[Rule]", "10"}]}], "]"}]}]], "Input",
+ CellLabel->"In[6]:=",ExpressionUUID->"9b56f8d8-08e6-4ec1-9115-7c696e7b2a7b"],
 
 Cell[BoxData[
  RowBox[{"image", "=", 
@@ -72,8 +61,7 @@ Cell[BoxData[
     ",", "\[IndentingNewLine]", 
     RowBox[{"ImageSize", "\[Rule]", "1200"}]}], "\[IndentingNewLine]", 
    "]"}]}]], "Input",
- CellLabel->
-  "In[230]:=",ExpressionUUID->"8aa1a589-9b16-4c3e-b375-167958fcffa9"],
+ CellLabel->"In[7]:=",ExpressionUUID->"8aa1a589-9b16-4c3e-b375-167958fcffa9"],
 
 Cell[BoxData[
  RowBox[{"Export", "[", "\[IndentingNewLine]", 
@@ -85,9 +73,54 @@ Cell[BoxData[
       "\"\<Logo.png\>\""}], "}"}], "]"}], ",", "\[IndentingNewLine]", 
    "image"}], "\[IndentingNewLine]", "]"}]], "Input",
  CellLabel->"In[231]:=",ExpressionUUID->"c7cf7842-ac87-4e8b-9dcf-d60cd4c11435"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Icon", \
+"Subsubsection",ExpressionUUID->"24f3341f-4288-43fa-8128-9c49f265edd8"],
+
+Cell[BoxData[
+ RowBox[{"icon", "=", 
+  RowBox[{"Framed", "[", "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"Row", "[", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"Style", "[", 
+        RowBox[{"\"\<H\>\"", ",", "Blue", ",", "Bold", ",", "48"}], "]"}], 
+       ",", 
+       RowBox[{"Style", "[", 
+        RowBox[{"\"\<T\>\"", ",", "Red", ",", "Bold", ",", "48"}], "]"}]}], 
+      "}"}], "]"}], ",", "\[IndentingNewLine]", 
+    RowBox[{"RoundingRadius", "\[Rule]", "5"}], ",", "\[IndentingNewLine]", 
+    RowBox[{"FrameMargins", "\[Rule]", "None"}], ",", "\[IndentingNewLine]", 
+    RowBox[{"ImageSize", "\[Rule]", 
+     RowBox[{"{", 
+      RowBox[{"60", ",", "60"}], "}"}]}], ",", "\[IndentingNewLine]", 
+    RowBox[{"Alignment", "\[Rule]", "Center"}], ",", "\[IndentingNewLine]", 
+    RowBox[{"FrameStyle", "\[Rule]", "Thick"}]}], "\[IndentingNewLine]", 
+   "]"}]}]], "Input",
+ CellLabel->"In[36]:=",ExpressionUUID->"bc58d7f8-b9ac-4597-b18c-03623f532564"],
+
+Cell[BoxData[
+ RowBox[{"Export", "[", "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{"FileNameJoin", "[", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"NotebookDirectory", "[", "]"}], ",", "\"\<FrontEnd\>\"", ",", 
+      "\"\<Icon.png\>\""}], "}"}], "]"}], ",", "\[IndentingNewLine]", "icon", 
+   ",", "\[IndentingNewLine]", 
+   RowBox[{"ImageSize", "\[Rule]", 
+    RowBox[{"{", 
+     RowBox[{"46", ",", "46"}], "}"}]}]}], "\[IndentingNewLine]", 
+  "]"}]], "Input",
+ CellLabel->"In[37]:=",ExpressionUUID->"7688cad2-c162-4276-8bd6-f81c6260c615"]
+}, Open  ]]
 },
-WindowSize->{1494, 923},
-WindowMargins->{{Automatic, 143}, {Automatic, 6}},
+WindowSize->{1132, 934},
+WindowMargins->{{280, Automatic}, {Automatic, 4}},
 PrivateNotebookOptions->{"FileOutlineCache"->False},
 FrontEndVersion->"11.3 for Microsoft Windows (64-bit) (March 6, 2018)",
 StyleDefinitions->"Default.nb"

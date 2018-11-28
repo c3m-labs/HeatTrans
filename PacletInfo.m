@@ -10,7 +10,7 @@ Paclet[
 	Creator -> "Matevz Pintar",
 	Publisher -> "C3M d.o.o.",
 	URL->"https://github.com/c3m-labs/HeatTrans",
-	Thumbnail->"FrontEnd/Logo.png",
+	Thumbnail->"FrontEnd/Icon.png",
 	Extensions -> {
 		{"Kernel",
 			Root -> ".",
