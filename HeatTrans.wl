@@ -66,12 +66,16 @@ If it doesn't exist it compiles it from source (.C file). This avoids problems
 with compilation of elements for other systems, assuming users have appropriate 
 compiler installed. *)
 
+(* Attach message to General symbol instead of some package symbol. *)
+General::unsupported="$SystemID `1` is not supported.";
+
 getLibrary[name_]:=Module[
 	{ext,srcDir,libDir,src,lib},
 	ext=Switch[$SystemID,
 		"Windows-x86-64",".W64.dll",
-		"Linux-x86-64",".L64.so",
-		"MacOSX-x86-64",".M64.dylib"
+		"Linux-x86-64",".L64.dll",
+		"MacOSX-x86-64",".M64.dll",
+		_,Message[General::unsupported,$SystemID];Abort[]
 	];
 	
 	srcDir=FileNameJoin[{$packageDirectory,"LibraryResources","Source"}];
