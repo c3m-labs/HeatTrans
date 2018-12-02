@@ -3,7 +3,7 @@
 It is considered good practice that every (public) function in this package inclues its own set of unit tests. 
 A bunch of them is collected in `Tests/Tests.wl` file, using the Mathematica 
 testing [framework](https://reference.wolfram.com/language/guide/SystematicTestingAndVerification.html). 
-It is strongly reccomended that tests are run periodically during development and especially before every commit. 
+It is reccomended that tests are run periodically during development and especially before every commit. 
 
 #### Integration of test in Git hook
 
@@ -18,8 +18,12 @@ and aborts the commit otherwise. Minimal example of `pre-commit` file content is
 ## How to build the package
 
 #### Prerequisites
-* Version 11.3 or greater of Mathematica
+* [Mathematica](https://www.wolfram.com/mathematica/) version 11.3 or later
 * [Wolfram Workbench](https://www.wolfram.com/workbench/)
+* [AceFEM/AceGen](http://symech.fgg.uni-lj.si/) packages version 6.912 or later
+
+#### Generating element subroutines
+Finite element subroutines for assembly of residual vector and tangent matrix are written using AceGen package. AceGen code generates .C files, which are then compiled to libraries for each operating system. This procedure is happens when the whole notebook `./Elements/GenerateElements.nb` is evaluated.
 
 #### Building documentation
 First, import HeatTrans in Workbench:
