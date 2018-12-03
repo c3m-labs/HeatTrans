@@ -84,11 +84,18 @@ Short[#, Rational[2, 3]]& ]\),
 (*HeatTransfer*)
 
 
-VerificationTest[
-	HeatTransfer[Disk[],1,$DefaultMaterial,"NoTimeSteps"->2],
-	_InterpolatingFunction,
-	SameTest->MatchQ,
-	TestID->"HeatTransfer_success"
+With[{
+	mesh=ToElementMesh[
+		"Coordinates"->{{1.,0.},{1.,1.},{1.5,0.},{1.5,1.},{2.,0.},{2.,1.},{1.,0.5},{1.4,0.4},{2.,0.5}}, 
+		"MeshElements"->{QuadElement[{{1,3,8,7},{7,8,4,2},{3,5,9,8},{8,9,6,4}}]}
+	]
+	},
+	VerificationTest[
+		HeatTransfer[mesh,1,$DefaultMaterial,"NoTimeSteps"->2],
+		_InterpolatingFunction,
+		SameTest->MatchQ,
+		TestID->"HeatTransfer_success"
+	]
 ]
 
 
