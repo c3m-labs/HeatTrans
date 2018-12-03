@@ -356,8 +356,11 @@ End[]; (* "`Private`" *)
 EndPackage[];
 
 
-HeatTransfer::version="Recommended AceFEM version is at least `1`.";
+HeatTransfer::version="Recommended AceFEM package version is at least `1`.";
 
 With[{ver=6.912},
-	If[TrueQ[ver<SMCSession[[16]]],Message[HeatTransfer::version,ToString@ver]]
+	If[
+		TrueQ@(ver>SMCSession[[16]]),
+		Message[HeatTransfer::version,ToString@ver]
+	]
 ]
