@@ -1,9 +1,4 @@
 Notebook[{
-Cell["\<\
-This notebook has options set to \[OpenCurlyDoubleQuote]FileOutlineCache\
-\[CloseCurlyDoubleQuote]->False to reduce the amount of metadata inside it. \
-\>", "Text",ExpressionUUID->"d24e8e96-56db-4316-960a-cd9f2308c7aa"],
-
 Cell[BoxData[
  RowBox[{"Get", "[", "\"\<AceGen`\>\"", "]"}]], "Input",
  CellLabel->"In[1]:=",ExpressionUUID->"53a6dd32-548f-4fe2-b8ac-1d7fc5c38ce1"],
@@ -97,15 +92,15 @@ Cell[BoxData[
       RowBox[{"Switch", "[", 
        RowBox[{
        "$OperatingSystem", ",", "\"\<Windows\>\"", ",", "\"\<.dll\>\"", ",", 
-        "\"\<Unix\>\"", ",", "\"\<.so\>\"", ",", "\"\<MacOSX\>\"", ",", 
-        "\"\<.dylib\>\""}], "]"}]}], "\[IndentingNewLine]", "}"}], ",", 
+        "\"\<Unix\>\"", ",", "\"\<.dll\>\"", ",", "\"\<MacOSX\>\"", ",", 
+        "\"\<.dll\>\""}], "]"}]}], "\[IndentingNewLine]", "}"}], ",", 
     "\[IndentingNewLine]", 
     RowBox[{"FileNames", "[", 
      RowBox[{
       RowBox[{"\"\<*\>\"", "<>", "ext"}], ",", 
       RowBox[{"NotebookDirectory", "[", "]"}]}], "]"}]}], 
-   "\[IndentingNewLine]", "]"}]}]], "Input",
- CellLabel->"In[9]:=",ExpressionUUID->"07419c92-1596-4f9c-a340-cdf52315ee8d"],
+   "\[IndentingNewLine]", 
+   "]"}]}]], "Input",ExpressionUUID->"07419c92-1596-4f9c-a340-cdf52315ee8d"],
 
 Cell[BoxData[
  RowBox[{"With", "[", 
@@ -206,8 +201,8 @@ Cell[BoxData[
 }, Open  ]]
 }, Open  ]]
 },
-WindowSize->{936, 1030},
-WindowMargins->{{Automatic, -6}, {Automatic, 3}},
+WindowSize->{958, 1086},
+WindowMargins->{{Automatic, -8}, {Automatic, 0}},
 PrivateNotebookOptions->{"FileOutlineCache"->False},
 FrontEndVersion->"11.3 for Microsoft Windows (64-bit) (March 6, 2018)",
 StyleDefinitions->"Default.nb"
