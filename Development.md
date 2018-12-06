@@ -3,7 +3,9 @@
 It is considered good practice that every (public) function in this package inclues its own set of unit tests. 
 A bunch of them is collected in `Tests/Tests.wl` file, using the Mathematica 
 testing [framework](https://reference.wolfram.com/language/guide/SystematicTestingAndVerification.html). 
-It is reccomended that tests are run periodically during development and especially before every commit. 
+It is reccomended that you run them periodically during development and especially before every commit. 
+This can be done by calling script file `Tests/RunTests.wls` in command line (first change directory to project root directory) 
+or by evaluating whole notebook `Tests/RunTests.nb`.
 
 #### Integration of test in Git hook
 
