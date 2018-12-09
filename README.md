@@ -7,29 +7,38 @@ with [AceFEM](http://symech.fgg.uni-lj.si/) framework.
 
 ## Installation
 
-To use "HeatTrans" package you need Mathematica version 11.1 or later and 
+The following description is for people who are not interested in package development 
+and just want to use the package functionality. 
+
+To use _HeatTrans_ package you need Mathematica version 11.1 or later and 
 AceFEM package, version 6.912 or later ([trial](http://symech.fgg.uni-lj.si/Download.htm) version). 
 Supported operating systems are 64-bit Windows, MacOS and Linux.
 
-The HeatTrans release comes in the `.paclet` file format, which contains the entire package and its documentation. 
-Download the latest release from the [Github repo's releases page](https://github.com/c3m-labs/HeatTrans/releases) 
-and install it by evaluating the following command in the Mathematica:
+_HeatTrans_ package is released in the `.paclet` file format, which contains code, documentation and other necesseary resources. 
+Download the latest release from the [repository "releases" page](https://github.com/c3m-labs/HeatTrans/releases) 
+to your computer and install it by evaluating the following command in the Mathematica:
 
-    PacletInstall["/full/path/to/HeatTrans-X.Y.Z.paclet"]
+```mathematica
+Needs["PacletManager`"] (* This is ussualy loaded automatically at kernel startup. *)
 
-This will permanently install the HeatTrans paclet to `$UserBasePacletsDirectory`. 
-Mathematica will always use the latest installed version of package. 
-All installed versions can be enumerated using the command:
+PacletInstall["/full/path/to/HeatTrans-X.Y.Z.paclet"]
+```
 
-    PacletFind["HeatTrans"]
-
+This will permanently install the _HeatTrans_ package to `$UserBasePacletsDirectory`. 
 To update the documentation it may be necessary to restart Mathematica. 
-All versions can be uninstalled with `PacletUninstall["HeatTrans"]`.
+Mathematica will always use the latest installed version of package and all installed versions 
+can be enumerated by evaluating `PacletFind["HeatTrans"]`.
+You can get more detailed information about the package with `PacletInformation["HeatTrans"]`.
+All versions can be uninstalled with:
+
+```mathematica
+PacletUninstall["HeatTrans"]
+```
 
 
 ## Usage
 
-After you have installed the paclet, load it to Mathematica session with `Get`. 
+After you have installed the package, load it to Mathematica session with `Get`. 
 Then you can, for example, calculate temperature distribution over triangular steel bar after 60 seconds 
 using the main function `HeatTransfer`.
 
@@ -41,8 +50,8 @@ region = Triangle[{{0,0},{1,1},{2,0}}/100];
 endTime = 60;
 material = <|"Conductivity" -> 55, "Density" -> 7800, "SpecificHeat" -> 470|>;
     
-result = HeatTransfer[region, time, material]
-(* InterpolatingFunction[...] *)
+(* InterpolatingFunction[...] object is returned. *)
+result = HeatTransfer[region, endTime, material]
     
 Plot3D[
     result[endTime, x, y],
@@ -56,15 +65,15 @@ Plot3D[
 
 ![plot3D](https://i.imgur.com/F0pGWwV.png)
     
-To access the documentation, open the notebook interface help viewer and search for HeatTrans.
+To access the documentation, open the notebook interface help viewer and search for _HeatTrans_.
 
 
 ## Contributing and bug reports
 
-The main purpose of HeatTrans repository is to develop and demonstrate good 
-[software development practices](https://doi.org/10.1371/journal.pbio.1001745) using Mathematica and AceFEM framework.
+The main purpose of _HeatTrans_ package is to test and demonstrate good software development
+[practices](https://doi.org/10.1371/journal.pbio.1001745) using Mathematica and AceFEM framework.
 Therefore, there is less focus on building more advanced FEM modelling capabilites. 
 
-Please use the repository [issues](https://github.com/c3m-labs/HeatTrans/issues) page to submit bugs or feature ideas. 
+Please use this repository [issues](https://github.com/c3m-labs/HeatTrans/issues) page to submit bugs or feature ideas. 
 Contributions to this repository are very welcome. 
-Guidelines on how to build the paclet file from source code can be found in [Development.md]( Development.md ) file.
+Guidelines on how to build `.paclet` file from the source code can be found in [Development.md]( Development.md ) file.
