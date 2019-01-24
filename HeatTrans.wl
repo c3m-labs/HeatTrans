@@ -1,6 +1,10 @@
 (* ::Package:: *)
 
 (* ::Section::Closed:: *)
+(*Begin package*)
+
+
+(* ::Subsection::Closed:: *)
 (*Header comments*)
 
 
@@ -8,23 +12,25 @@
 (* :Context: HeatTrans` *)
 (* :Author: Matevz Pintar *)
 (* :Summary: Package for non-stationary of heat transfer simulation with AceFEM framework. *)
-(* :Copyright: C3M d.o.o., 2018 *)
+(* :Copyright: C3M d.o.o., 2019 *)
 
-(* :Summary:
-	Add text here.
- *)
+(* :Summary: *)
 
 
-(* ::Section::Closed:: *)
+(* ::Subsection::Closed:: *)
 (*Begin package*)
 
 
-(* This enables using AceFEM also without Notebook interface. Explanation why this works
- is a bit complicated. *)
-If[Not@$Notebooks,Get["AceFEM`Remote`"]];
+(* This enables using AceFEM also without Notebook interface.
+It has to be called before BeginPackage, because AceFEM doesn't follow standard conventions. *)
+If[
+	Not@$Notebooks,
+	Get["AceFEM`Remote`"]
+];
 
-(*  "AceFEM`" context should be called before "AceCommon`", because it loads the AceFEM package,
-menawhile "AceCommon`" doesn't load the package, but puts this Context on $ContextPath inside the package.  *)
+(* "AceFEM`" context should be called before "AceCommon`", because it loads the AceFEM package,
+meanwhile "AceCommon`" doesn't load the package, 
+but puts this Context on $ContextPath inside the package. *)
 BeginPackage["HeatTrans`",{"NDSolve`FEM`","AceFEM`","AceCommon`"}];
 
 
@@ -109,7 +115,8 @@ getLibrary[name_]:=Module[
 (*Mesh*)
 
 
-(* This function is copied from FEMAddOns package ( https://github.com/WolframResearch/FEMAddOns ). *)
+(* This function is copied from FEMAddOns package 
+( https://github.com/WolframResearch/FEMAddOns ) *)
 laplacianElementMeshSmoothing[mesh_]:=Block[
 	{n, vec, mat, adjacencymatrix2, mass2, laplacian2, typoOpt, 
 	bndvertices2, interiorvertices, stiffness, load, newCoords}, 
@@ -134,12 +141,14 @@ laplacianElementMeshSmoothing[mesh_]:=Block[
 
 	newCoords = LinearSolve[stiffness, load];
 
-	typoOpt = If[$VersionNumber <= 11.3,
+	typoOpt = If[
+			$VersionNumber <= 11.3,
 			"CheckIncidentsCompletness" -> False,
 			"CheckIncidentsCompleteness" -> False
 		];
 
-	ToElementMesh["Coordinates" -> newCoords, 
+	ToElementMesh[
+		"Coordinates" -> newCoords, 
 		"MeshElements" -> mesh["MeshElements"], 
 		"BoundaryElements" -> mesh["BoundaryElements"], 
 		"PointElements" -> mesh["PointElements"], 
@@ -211,6 +220,7 @@ setup//Options={"SaveResultsTo"->False,"Console"->Automatic};
 (* We assume that profile mesh is always made of QuadElement (Q1 or Q2S topology) *)
 setup[mesh_,material_,opts:OptionsPattern[]]:=Module[
 	{order,solidElement,surfaceElement,resultsFile,consoleQ},
+	
 	(* Name of results file can be some given string or default name.*)
 	resultsFile=ReplaceAll[
 		OptionValue["SaveResultsTo"],
@@ -225,10 +235,16 @@ setup[mesh_,material_,opts:OptionsPattern[]]:=Module[
 	
 	SMTInputData["Console"->consoleQ];
 	SMTAddDomain[{
-		{"solid",solidElement,assembleDomainData[material],"Source"->getLibrary[solidElement]},
-		{"surface",surfaceElement,{"h *"->10.,"Tamb *"->25.},"Source"->getLibrary[surfaceElement]}
+		{"Solid",solidElement,assembleDomainData[material],"Source"->getLibrary[solidElement]},
+		{"Surface",surfaceElement,{"h *"->10.,"Tamb *"->25.},"Source"->getLibrary[surfaceElement]}
 	}];
-	SMTAddMesh[mesh,{(order/.{1->"Q1",2->"Q2S"})->"solid",(order/.{1->"L1",2->"L2"})->"surface"},"BoundaryElements"->True];
+	SMTAddMesh[mesh,
+		{
+		(order/.{1->"Q1",2->"Q2S"})->"Solid",
+		(order/.{1->"L1",2->"L2"})->"Surface"
+		},
+		"BoundaryElements"->True
+	];
 	
 	SMTAnalysis["DumpInputTo"->resultsFile]
 ]
@@ -241,8 +257,10 @@ setup[mesh_,material_,opts:OptionsPattern[]]:=Module[
 analysis//ClearAll
 
 analysis//Options={
-	"InitialTemperature"->100.,"AmbientTemperature"->20.,"ConvectionCoefficient"->20.
-	};
+	"InitialTemperature"->100.,
+	"AmbientTemperature"->20.,
+	"ConvectionCoefficient"->20.
+};
 
 analysis[mesh_,time_,noSteps_,opts:OptionsPattern[]]:=Module[
 	{initialTemp,ambientTemp,convCoeff,timeSteps,reaped,data},
@@ -254,8 +272,8 @@ analysis[mesh_,time_,noSteps_,opts:OptionsPattern[]]:=Module[
 	timeSteps=Subdivide[0.,time,noSteps];
 	
 	SMTAddInitialBoundary["T",1->initialTemp,"Type"->"InitialCondition"];
-	SMTDomainData["surface","Data","h*"->convCoeff];
-	SMTDomainData["surface","Data","Tamb*"->ambientTemp];
+	SMTDomainData["Surface","Data","h*"->convCoeff];
+	SMTDomainData["Surface","Data","Tamb*"->ambientTemp];
 	
 	reaped=Reap@Do[
 		SMTNextStep["t"->t];
@@ -337,8 +355,14 @@ HeatTransfer[mesh_ElementMesh,time_,material_,opts:OptionsPattern[]]:=Module[
 		Message[HeatTransfer::quadElms];Return[$Failed]
 	];
 	
-	setup[mesh,material,FilterRules[Join[{opts},Options[HeatTransfer]],Options@setup]];
-	analysis[mesh,time,noSteps,FilterRules[Join[{opts},Options[HeatTransfer]],Options@analysis]]
+	setup[
+		mesh,material,
+		FilterRules[Join[{opts},Options[HeatTransfer]],Options@setup]
+	];
+	analysis[
+		mesh,time,noSteps,
+		FilterRules[Join[{opts},Options[HeatTransfer]],Options@analysis]
+	]
 ]
 
 
@@ -358,7 +382,8 @@ EndPackage[];
 
 HeatTransfer::version="Recommended AceFEM package version is at least `1`.";
 
-With[{ver=6.912},
+With[
+	{ver=6.912},
 	If[
 		TrueQ@(ver>SMCSession[[16]]),
 		Message[HeatTransfer::version,ToString@ver]
