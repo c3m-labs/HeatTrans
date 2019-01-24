@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-(* ::Subsection::Closed:: *)
+(* ::Subsection:: *)
 (*Description*)
 
 
@@ -15,16 +15,17 @@ If[
 ];
 
 
-(* Currently it is unclear what this line does, it is automatically gnerated during conversion to .wlt *)
 BeginTestSection["Tests"]
 
 
-(* ::Subsection::Closed:: *)
+(* ::Subsection:: *)
 (*MakeMesh*)
 
 
 VerificationTest[
-	With[{mesh=MakeMesh[Disk[],1]},
+	With[{
+		mesh=MakeMesh[Disk[],1]
+		},
 		(* Test should return True *)
 		And[
 			Head@First@mesh["MeshElements"]==QuadElement,
@@ -36,7 +37,9 @@ VerificationTest[
 
 
 VerificationTest[
-	With[{mesh=MakeMesh[Disk[],2]},
+	With[{
+		mesh=MakeMesh[Disk[],2]
+		},
 		(* Test should return True *)
 		And[
 			Head@First@mesh["MeshElements"]==QuadElement,
@@ -57,12 +60,7 @@ VerificationTest[
 VerificationTest[
 	MakeMesh[Ball[],1],
 	$Failed,
-	\!\(\*
-TagBox[
-RowBox[{"{", 
-StyleBox[
-RowBox[{"MakeMesh", "::", "badreg"}], "MessageName"], "}"}],
-Short[#, Rational[2, 3]]& ]\),
+	{MakeMesh::badreg},
 	TestID->"MakeMesh_fail_3D_region"
 ]
 
@@ -70,17 +68,12 @@ Short[#, Rational[2, 3]]& ]\),
 VerificationTest[
 	MakeMesh[HalfPlane[{{0,0},{1,0}},{0,1}],1],
 	$Failed,
-	\!\(\*
-TagBox[
-RowBox[{"{", 
-StyleBox[
-RowBox[{"MakeMesh", "::", "badreg"}], "MessageName"], "}"}],
-Short[#, Rational[2, 3]]& ]\),
+	{MakeMesh::badreg},
 	TestID->"MakeMesh_fail_unbounded_region"
 ]
 
 
-(* ::Subsection::Closed:: *)
+(* ::Subsection:: *)
 (*HeatTransfer*)
 
 
@@ -102,12 +95,7 @@ With[{
 VerificationTest[
 	HeatTransfer[ToElementMesh@Disk[],1,$DefaultMaterial],
 	$Failed,
-	\!\(\*
-TagBox[
-RowBox[{"{", 
-StyleBox[
-RowBox[{"HeatTransfer", "::", "quadElms"}], "MessageName"], "}"}],
-Short[#, Rational[2, 3]]& ]\),
+	{HeatTransfer::quadElms},
 	TestID->"HeatTransfer_fail_triangleElements"
 ]
 
@@ -115,16 +103,12 @@ Short[#, Rational[2, 3]]& ]\),
 VerificationTest[
 	HeatTransfer[Disk[],1,$DefaultMaterial,"NoTimeSteps"->-2],
 	$Failed,
-	\!\(\*
-TagBox[
-RowBox[{"{", 
-RowBox[{"HeatTransfer", "::", "timeSteps"}], "}"}],
-Short[#, Rational[2, 3]]& ]\),
+	{HeatTransfer::timeSteps},
 	TestID->"HeatTransfer_fail_noTimeSteps"
 ]
 
 
-(* ::Subsection::Closed:: *)
+(* ::Subsection:: *)
 (*EndTestSection*)
 
 

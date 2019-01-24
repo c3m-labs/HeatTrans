@@ -5,7 +5,7 @@ $helpMessage=("  Usage: RunTests.wls [options]
 
   Options:
     -h, --help                   Output usage information
-    --console                    Print CDriver messages")
+    -c, --console                Print CDriver messages")
 
 
 If[
@@ -21,20 +21,37 @@ By default we assume script is started from git root directory. *)
 PacletDirectoryAdd@Directory[];
 Get["HeatTrans`"];
 
-SetOptions[HeatTransfer,"Console"->MemberQ[Rest@$ScriptCommandLine,"--console"]];
+Print["  Using Mathematica: ",$VersionNumber," / AceFEM: ",SMCSession[[16]]];
+
+SetOptions[
+	HeatTransfer,
+	"Console"->MemberQ[Rest@$ScriptCommandLine,"-c"|"--console"]
+];
 
 Module[
-	{tr,time},
-	tr=TestReport[FileNameJoin[{Directory[],"Tests","Tests.wl"}]];
-	time=QuantityMagnitude@tr["TimeElapsed"];
+	{report,time,results,count,failIdx},
+	
+	report=TestReport[
+		FileNameJoin[{Directory[],"Tests","Tests.wl"}]
+	];
+	time=QuantityMagnitude@report["TimeElapsed"];
+	results=report["TestResults"];
+	count=Length[results];
+	failIdx=report["TestsFailedIndices"];
+	
+	Print["\n","  ",ToString@count," tests run in ",ToString@time," seconds."];
 	
 	If[
-		TrueQ@tr["AllTestsSucceeded"]
+		TrueQ@report["AllTestsSucceeded"]
 		,
-		Print["\n","  All tests passed in ",ToString@time," seconds."];
+		Print["  All tests succeeded!"];
 		Quit[0] (* exit code if all test pass *)
 		,
-		Print["\n","  Tests failed! IDs: ",tr["TestsFailedIndices"]];
+		Print["  ",ToString@Length[failIdx]," tests failed!"];
+		Do[
+			Print["  ",i," / ",results[i]["Outcome"]," / ",results[i]["TestID"]],
+			{i,failIdx}
+		];
 		Quit[1] (* exit code if any test fails *)
 	]
 ]
