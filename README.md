@@ -1,8 +1,12 @@
+[![releases](https://img.shields.io/github/release-pre/c3m-labs/HeatTrans.svg)](https://github.com/c3m-labs/HeatTrans/releases)
+[![SemVer 2.0.0](https://img.shields.io/badge/SemVer-2.0.0-brightgreen.svg)](http://semver.org/spec/v2.0.0.html)
+
+
 # HeatTrans
 [Mathematica](http://www.wolfram.com/mathematica/) package for non-stationary heat transfer simulation 
 with [AceFEM](http://symech.fgg.uni-lj.si/) framework.
 
-![logo](FrontEnd/Logo.png)
+![logo](Images/Logo.png)
 
 
 ## Installation
@@ -64,7 +68,7 @@ Plot3D[
 ]
 ```
 
-![plot3D](https://i.imgur.com/F0pGWwV.png)
+![plot3D](Images/Plot3D.png)
     
 To access the documentation, open the notebook interface help viewer and search for _HeatTrans_.
 

@@ -1,0 +1,206 @@
+Notebook[{
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", " ", 
+   RowBox[{"Load", " ", "package", " ", "from", " ", "development", " ", 
+    RowBox[{"directory", ".", "\[IndentingNewLine]", "Delete"}], " ", "all", 
+    " ", "output", " ", "from", " ", "this", " ", "notebook", " ", "before", 
+    " ", "saving", " ", 
+    RowBox[{"it", "."}]}], " ", "*)"}], "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"$projectRoot", "=", 
+     RowBox[{"ParentDirectory", "[", 
+      RowBox[{"NotebookDirectory", "[", "]"}], "]"}]}], ";"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{"PacletDirectoryAdd", "@", "$projectRoot"}], "\[IndentingNewLine]", 
+   RowBox[{"Get", "[", "\"\<HeatTrans`\>\"", "]"}]}]}]], "Input",
+ CellLabel->"In[12]:=",ExpressionUUID->"0ecb9a51-289b-45b0-9f28-c6fbdc0c37eb"],
+
+Cell[CellGroupData[{
+
+Cell["Logo", \
+"Subsubsection",ExpressionUUID->"a1488863-7bba-4b9c-8f35-d7cf5211356c"],
+
+Cell[BoxData[
+ RowBox[{"reg", "=", 
+  RowBox[{"DiscretizeGraphics", "[", "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"Text", "[", 
+     RowBox[{"Style", "[", 
+      RowBox[{"\"\<HeatTrans\>\"", ",", 
+       RowBox[{"FontSize", "\[Rule]", "2"}], ",", 
+       RowBox[{"FontWeight", "\[Rule]", "\"\<ExtraBold\>\""}]}], "]"}], "]"}],
+     ",", "\[IndentingNewLine]", "_Text", ",", "\[IndentingNewLine]", 
+    RowBox[{"Axes", "\[Rule]", "True"}], ",", "\[IndentingNewLine]", 
+    RowBox[{"ImageSize", "\[Rule]", "600"}]}], "\[IndentingNewLine]", 
+   "]"}]}]], "Input",
+ CellLabel->"In[15]:=",ExpressionUUID->"e9d6197c-0333-47af-8b53-91ef7fafaf44"],
+
+Cell[BoxData[
+ RowBox[{"int", "=", 
+  RowBox[{"HeatTransfer", "[", 
+   RowBox[{"reg", ",", " ", "200", ",", " ", "$DefaultMaterial", ",", 
+    RowBox[{"\"\<NoTimeSteps\>\"", "\[Rule]", "10"}]}], "]"}]}]], "Input",
+ CellLabel->"In[16]:=",ExpressionUUID->"9b56f8d8-08e6-4ec1-9115-7c696e7b2a7b"],
+
+Cell[BoxData[
+ RowBox[{"logo", "=", 
+  RowBox[{"SMTShowMesh", "[", "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"\"\<Field\>\"", "\[Rule]", "\"\<Temperature\>\""}], ",", 
+    "\[IndentingNewLine]", 
+    RowBox[{"\"\<Domains\>\"", "\[Rule]", "1"}], ",", "\[IndentingNewLine]", 
+    RowBox[{"\"\<Legend\>\"", "\[Rule]", "False"}], ",", 
+    "\[IndentingNewLine]", 
+    RowBox[{"\"\<Mesh\>\"", "\[Rule]", 
+     RowBox[{"GrayLevel", "[", "0.3", "]"}]}], ",", "\[IndentingNewLine]", 
+    RowBox[{"\"\<Contour\>\"", "\[Rule]", "True"}], ",", 
+    "\[IndentingNewLine]", 
+    RowBox[{"\"\<ColorFunction\>\"", "\[Rule]", 
+     RowBox[{"(", 
+      RowBox[{
+       RowBox[{"ColorData", "[", 
+        RowBox[{"\"\<TemperatureMap\>\"", ",", "#"}], "]"}], "&"}], ")"}]}], 
+    ",", "\[IndentingNewLine]", 
+    RowBox[{"ImageSize", "\[Rule]", "1200"}]}], "\[IndentingNewLine]", 
+   "]"}]}]], "Input",
+ CellLabel->"In[17]:=",ExpressionUUID->"8aa1a589-9b16-4c3e-b375-167958fcffa9"],
+
+Cell[BoxData[
+ RowBox[{"Export", "[", "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{"FileNameJoin", "[", 
+    RowBox[{"{", 
+     RowBox[{"$projectRoot", ",", "\"\<Images\>\"", ",", "\"\<Logo.png\>\""}],
+      "}"}], "]"}], ",", "\[IndentingNewLine]", "logo"}], 
+  "\[IndentingNewLine]", "]"}]], "Input",
+ CellLabel->"In[18]:=",ExpressionUUID->"c7cf7842-ac87-4e8b-9dcf-d60cd4c11435"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["README examples", \
+"Subsubsection",ExpressionUUID->"b560c1de-5565-42e5-b90e-15d79fe53684"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"region", "=", 
+   RowBox[{"Triangle", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"0", ",", "0"}], "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"1", ",", "1"}], "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"2", ",", "0"}], "}"}]}], "}"}], "/", "100"}], "]"}]}], 
+  ";"}], "\n", 
+ RowBox[{
+  RowBox[{"endTime", "=", "60"}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"material", "=", 
+   RowBox[{"<|", 
+    RowBox[{
+     RowBox[{"\"\<Conductivity\>\"", "\[Rule]", "55"}], ",", 
+     RowBox[{"\"\<Density\>\"", "\[Rule]", "7800"}], ",", 
+     RowBox[{"\"\<SpecificHeat\>\"", "\[Rule]", "470"}]}], "|>"}]}], 
+  ";"}]}], "Input",
+ CellLabel->"In[19]:=",ExpressionUUID->"a3e89a4a-f1dc-4122-8a50-497e60229c2b"],
+
+Cell[BoxData[
+ RowBox[{"result", "=", 
+  RowBox[{"HeatTransfer", "[", 
+   RowBox[{"region", ",", "endTime", ",", "material"}], "]"}]}]], "Input",
+ CellLabel->"In[22]:=",ExpressionUUID->"968f18de-ffa0-46e7-9a4f-13f6657c9794"],
+
+Cell[BoxData[
+ RowBox[{"example1", "=", 
+  RowBox[{"Plot3D", "[", "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"result", "[", 
+     RowBox[{"endTime", ",", "x", ",", "y"}], "]"}], ",", 
+    "\[IndentingNewLine]", 
+    RowBox[{"Element", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"x", ",", "y"}], "}"}], ",", 
+      RowBox[{"result", "[", "\"\<ElementMesh\>\"", "]"}]}], "]"}], ",", 
+    "\[IndentingNewLine]", 
+    RowBox[{"ColorFunction", "\[Rule]", "\"\<TemperatureMap\>\""}], ",", 
+    "\[IndentingNewLine]", 
+    RowBox[{"AspectRatio", "\[Rule]", "Automatic"}], ",", 
+    "\[IndentingNewLine]", 
+    RowBox[{"Boxed", "\[Rule]", "False"}], ",", "\[IndentingNewLine]", 
+    RowBox[{"PlotRange", "\[Rule]", "All"}], ",", "\[IndentingNewLine]", 
+    RowBox[{"LabelStyle", "\[Rule]", "16"}], ",", "\[IndentingNewLine]", 
+    RowBox[{"ImageSize", "\[Rule]", 
+     RowBox[{"{", 
+      RowBox[{"800", ",", "300"}], "}"}]}]}], "\[IndentingNewLine]", 
+   "]"}]}]], "Input",
+ CellLabel->"In[23]:=",ExpressionUUID->"b31346a4-c696-4c76-acae-24e971089a61"],
+
+Cell[BoxData[
+ RowBox[{"Export", "[", "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{"FileNameJoin", "[", 
+    RowBox[{"{", 
+     RowBox[{
+     "$projectRoot", ",", "\"\<Images\>\"", ",", "\"\<Plot3D.png\>\""}], 
+     "}"}], "]"}], ",", "\[IndentingNewLine]", "example1"}], 
+  "\[IndentingNewLine]", "]"}]], "Input",
+ CellLabel->"In[24]:=",ExpressionUUID->"7cf774b5-60b8-4217-8022-ed3748278014"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Icon", \
+"Subsubsection",ExpressionUUID->"24f3341f-4288-43fa-8128-9c49f265edd8"],
+
+Cell[BoxData[
+ RowBox[{"icon", "=", 
+  RowBox[{"Framed", "[", "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"Row", "[", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"Style", "[", 
+        RowBox[{"\"\<H\>\"", ",", "Blue", ",", "Bold", ",", "48"}], "]"}], 
+       ",", 
+       RowBox[{"Style", "[", 
+        RowBox[{"\"\<T\>\"", ",", "Red", ",", "Bold", ",", "48"}], "]"}]}], 
+      "}"}], "]"}], ",", "\[IndentingNewLine]", 
+    RowBox[{"RoundingRadius", "\[Rule]", "5"}], ",", "\[IndentingNewLine]", 
+    RowBox[{"FrameMargins", "\[Rule]", "None"}], ",", "\[IndentingNewLine]", 
+    RowBox[{"ImageSize", "\[Rule]", 
+     RowBox[{"{", 
+      RowBox[{"60", ",", "60"}], "}"}]}], ",", "\[IndentingNewLine]", 
+    RowBox[{"Alignment", "\[Rule]", "Center"}], ",", "\[IndentingNewLine]", 
+    RowBox[{"FrameStyle", "\[Rule]", "Thick"}]}], "\[IndentingNewLine]", 
+   "]"}]}]], "Input",
+ CellLabel->"In[25]:=",ExpressionUUID->"bc58d7f8-b9ac-4597-b18c-03623f532564"],
+
+Cell[BoxData[
+ RowBox[{"Export", "[", "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{"FileNameJoin", "[", 
+    RowBox[{"{", 
+     RowBox[{
+     "$projectRoot", ",", "\"\<FrontEnd\>\"", ",", "\"\<Icon.png\>\""}], 
+     "}"}], "]"}], ",", "\[IndentingNewLine]", "icon", ",", 
+   "\[IndentingNewLine]", 
+   RowBox[{"ImageSize", "\[Rule]", 
+    RowBox[{"{", 
+     RowBox[{"46", ",", "46"}], "}"}]}]}], "\[IndentingNewLine]", 
+  "]"}]], "Input",
+ CellLabel->"In[26]:=",ExpressionUUID->"7688cad2-c162-4276-8bd6-f81c6260c615"]
+}, Open  ]]
+},
+WindowSize->{958, 1086},
+WindowMargins->{{Automatic, -8}, {Automatic, 0}},
+PrivateNotebookOptions->{"FileOutlineCache"->False},
+FrontEndVersion->"11.3 for Microsoft Windows (64-bit) (March 6, 2018)",
+StyleDefinitions->"Default.nb"
+]
+
