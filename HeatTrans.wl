@@ -179,6 +179,7 @@ MakeMesh[region_,order:(1|2)]:=Module[
 	triMesh=ToElementMesh[
 		region,
 		"MeshOrder"->1,
+		"MeshElementType"->TriangleElement,
 		MaxCellMeasure->{"Length"->maxBound/10},
 		AccuracyGoal->2
 	];
