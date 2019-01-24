@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[     31002,        730]
-NotebookOptionsPosition[     25241,        603]
-NotebookOutlinePosition[     25661,        619]
-CellTagsIndexPosition[     25618,        616]
+NotebookDataLength[     31047,        731]
+NotebookOptionsPosition[     25286,        604]
+NotebookOutlinePosition[     25706,        620]
+CellTagsIndexPosition[     25663,        617]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -547,6 +547,7 @@ V/jkGMj/B9LIaPo=
   GridLinesStyle->Directive[
     GrayLevel[0.5, 0.4]],
   ImagePadding->All,
+  ImageSize->{317.5999999999997, Automatic},
   Method->{
    "DefaultBoundaryStyle" -> Automatic, "DefaultMeshStyle" -> 
     AbsolutePointSize[6], "ScalingFunctions" -> None, 
@@ -709,26 +710,26 @@ Cell[11037, 315, 703, 16, 69, "MathCaption",ExpressionUUID->"26c9979c-08eb-4624-
 Cell[CellGroupData[{
 Cell[11765, 335, 757, 19, 125, "Input",ExpressionUUID->"4b7e8361-5dd1-4937-acb7-f2182852e098",
  CellID->232940369],
-Cell[12525, 356, 11829, 215, 127, "Output",ExpressionUUID->"9cc5a89f-bb59-4384-a80c-22d354883904",
+Cell[12525, 356, 11874, 216, 230, "Output",ExpressionUUID->"9cc5a89f-bb59-4384-a80c-22d354883904",
  CellID->186169801]
 }, Open  ]]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[24403, 577, 120, 1, 88, "TutorialMoreAboutSection",ExpressionUUID->"42e719b1-61d8-4c99-9299-0c504f0dba69",
+Cell[24448, 578, 120, 1, 88, "TutorialMoreAboutSection",ExpressionUUID->"42e719b1-61d8-4c99-9299-0c504f0dba69",
  CellID->23220180],
-Cell[24526, 580, 109, 1, 26, "TutorialMoreAbout",ExpressionUUID->"0653e130-61e7-42e2-8819-4395035ddecd",
+Cell[24571, 581, 109, 1, 26, "TutorialMoreAbout",ExpressionUUID->"0653e130-61e7-42e2-8819-4395035ddecd",
  CellID->1567025153]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[24672, 586, 127, 1, 88, "RelatedTutorialsSection",ExpressionUUID->"ecc70fcb-b341-4e14-8a75-5657bd993e39",
+Cell[24717, 587, 127, 1, 88, "RelatedTutorialsSection",ExpressionUUID->"ecc70fcb-b341-4e14-8a75-5657bd993e39",
  CellID->415694126],
-Cell[24802, 589, 107, 1, 26, "RelatedTutorials",ExpressionUUID->"d5753964-8eeb-45c9-8009-116e083ec7f9",
+Cell[24847, 590, 107, 1, 26, "RelatedTutorials",ExpressionUUID->"d5753964-8eeb-45c9-8009-116e083ec7f9",
  CellID->806871991]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[24946, 595, 153, 1, 88, "TutorialRelatedLinksSection",ExpressionUUID->"00579abe-88e9-4884-b162-2c9b5f0fe7c0",
+Cell[24991, 596, 153, 1, 88, "TutorialRelatedLinksSection",ExpressionUUID->"00579abe-88e9-4884-b162-2c9b5f0fe7c0",
  CellID->415694148],
-Cell[25102, 598, 111, 1, 26, "TutorialRelatedLinks",ExpressionUUID->"e249a6d3-e51b-42f3-9ab5-02e632e21bee",
+Cell[25147, 599, 111, 1, 26, "TutorialRelatedLinks",ExpressionUUID->"e249a6d3-e51b-42f3-9ab5-02e632e21bee",
  CellID->415694149]
 }, Open  ]]
 }, Open  ]]
