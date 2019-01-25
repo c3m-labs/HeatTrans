@@ -4,7 +4,7 @@
 (* BuildNumber and Internal values should be inserted during build procedure. *)
 Paclet[
 	Name -> "HeatTrans",
-	Version -> "0.2.0",
+	Version -> "0.3.0",
 	WolframVersion -> "11.1+",
 	Description -> "Package for non-stationary heat transfer simulation.",
 	Creator -> "Matevz Pintar",
