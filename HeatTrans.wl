@@ -33,6 +33,8 @@ meanwhile "AceCommon`" doesn't load the package,
 but puts this Context on $ContextPath inside the package. *)
 BeginPackage["HeatTrans`",{"NDSolve`FEM`","AceFEM`","AceCommon`"}];
 
+(* Clear definitions from package symbols in public and private context. *)
+ClearAll["`*","`*`*"];
 
 (* ::Subsection::Closed:: *)
 (*Public symbols*)
@@ -91,7 +93,7 @@ getLibrary[name_]:=Module[
 	
 	If[
 		Not@FileExistsQ[src],
-		Message[getLibrary::noopen,src];Abort[]
+		Message[General::noopen,src];Abort[]
 	];
 	
 	If[Not@DirectoryQ[libDir],CreateDirectory[libDir]];
@@ -104,7 +106,7 @@ getLibrary[name_]:=Module[
 		DeleteFile[FileNameJoin[{srcDir,FileNameTake@lib}]]
 	];
 	lib
-]
+];
 
 
 (* ::Subsection::Closed:: *)
@@ -117,27 +119,27 @@ getLibrary[name_]:=Module[
 
 (* This function is copied from FEMAddOns package 
 ( https://github.com/WolframResearch/FEMAddOns ) *)
-laplacianElementMeshSmoothing[mesh_]:=Block[
-	{n, vec, mat, adjacencymatrix2, mass2, laplacian2, typoOpt, 
-	bndvertices2, interiorvertices, stiffness, load, newCoords}, 
+laplacianElementMeshSmoothing[mesh_]:=Module[
+	{n, vec, mat, adjacencyMatrix, mass, laplacian, typoOpt,
+	bndVertices, interiorVertices, stiffness, load, newCoords},
 
 	n = Length[mesh["Coordinates"]];
 	vec = mesh["VertexElementConnectivity"];
 	mat = Unitize[vec.Transpose[vec]];
 	vec = Null;
-	adjacencymatrix2 = mat - DiagonalMatrix[Diagonal[mat]];
-	mass2 = DiagonalMatrix[SparseArray[Total[adjacencymatrix2, {2}]]];
-	stiffness = N[mass2 - adjacencymatrix2];
-	adjacencymatrix2 = Null;
-	mass2 = Null;
+	adjacencyMatrix = mat - DiagonalMatrix[Diagonal[mat]];
+	mass = DiagonalMatrix[SparseArray[Total[adjacencyMatrix, {2}]]];
+	stiffness = N[mass - adjacencyMatrix];
+	adjacencyMatrix = Null;
+	mass = Null;
 
-	bndvertices2 =  Flatten[Join @@ ElementIncidents[mesh["PointElements"]]];
-	interiorvertices = Complement[Range[1, n], bndvertices2];
+	bndVertices =  Flatten[Join @@ ElementIncidents[mesh["PointElements"]]];
+	interiorVertices = Complement[Range[1, n], bndVertices];
 
-	stiffness[[bndvertices2]] = IdentityMatrix[n, SparseArray][[bndvertices2]];
+	stiffness[[bndVertices]] = IdentityMatrix[n, SparseArray][[bndVertices]];
 
 	load = ConstantArray[0., {n, mesh["EmbeddingDimension"]}];
-	load[[bndvertices2]] = mesh["Coordinates"][[bndvertices2]];
+	load[[bndVertices]] = mesh["Coordinates"][[bndVertices]];
 
 	newCoords = LinearSolve[stiffness, load];
 
@@ -157,12 +159,10 @@ laplacianElementMeshSmoothing[mesh_]:=Block[
 		"DeleteDuplicateCoordinates" -> False,
 		"RegionHoles" -> mesh["RegionHoles"]
 	]
-]
+];
 
 
-MakeMesh//ClearAll
-
-MakeMesh::usage="MakeMesh[reg,ord] makes ElementMesh from 2D region reg with \"MeshoOrder\"->ord.";
+MakeMesh::usage="MakeMesh[reg,ord] makes ElementMesh from 2D region reg with \"MeshOrder\"->ord.";
 MakeMesh::badreg="Region should be a bounded region in 2D.";
 
 MakeMesh//SyntaxInformation={"ArgumentsPattern"->{_,_}};
@@ -188,14 +188,12 @@ MakeMesh[region_,order:(1|2)]:=Module[
 		laplacianElementMeshSmoothing@SMTTriangularToQuad[triMesh],
 		order
 	]
-]
+];
 
 
 (* ::Subsubsection::Closed:: *)
 (*Setup*)
 
-
-$DefaultMaterial//ClearAll
 
 $DefaultMaterial::usage="$DefaultMaterial represents a set of default material properties.";
 
@@ -203,18 +201,14 @@ $DefaultMaterial::usage="$DefaultMaterial represents a set of default material p
 $DefaultMaterial=<|"Conductivity"->55,"Density"->7800,"SpecificHeat"->470.|>;
 
 
-assembleDomainData//ClearAll
-
 assembleDomainData[material_Association,other_:{}]:=Join[{
 	"kt0 *"->material["Conductivity"],
 	"rho0 *"->material["Density"],
 	"cp0 *"->material["SpecificHeat"]
 	},
 	other
-]
+];
 
-
-setup//ClearAll
 
 setup//Options={"SaveResultsTo"->False,"Console"->Automatic};
 
@@ -248,14 +242,12 @@ setup[mesh_,material_,opts:OptionsPattern[]]:=Module[
 	];
 	
 	SMTAnalysis["DumpInputTo"->resultsFile]
-]
+];
 
 
 (* ::Subsubsection::Closed:: *)
 (*Analysis*)
 
-
-analysis//ClearAll
 
 analysis//Options={
 	"InitialTemperature"->100.,
@@ -264,16 +256,16 @@ analysis//Options={
 };
 
 analysis[mesh_,time_,noSteps_,opts:OptionsPattern[]]:=Module[
-	{initialTemp,ambientTemp,convCoeff,timeSteps,reaped,data},
+	{initialTemp,ambientTemp,conCoeff,timeSteps,reaped,data},
 	
 	initialTemp=OptionValue["InitialTemperature"];
 	ambientTemp=OptionValue["AmbientTemperature"];
-	convCoeff=Clip[OptionValue["ConvectionCoefficient"],{0.,Infinity}];
+	conCoeff=Clip[OptionValue["ConvectionCoefficient"],{0.,Infinity}];
 	
 	timeSteps=Subdivide[0.,time,noSteps];
 	
 	SMTAddInitialBoundary["T",1->initialTemp,"Type"->"InitialCondition"];
-	SMTDomainData["Surface","Data","h*"->convCoeff];
+	SMTDomainData["Surface","Data","h*"->conCoeff];
 	SMTDomainData["Surface","Data","Tamb*"->ambientTemp];
 	
 	reaped=Reap@Do[
@@ -300,14 +292,12 @@ analysis[mesh_,time_,noSteps_,opts:OptionsPattern[]]:=Module[
 		InterpolationOrder->All,
 		"ExtrapolationHandler"->{Function[Indeterminate],"WarningMessage"->False}
 	]
-]
+];
 
 
 (* ::Subsubsection::Closed:: *)
 (*Main*)
 
-
-HeatTransfer//ClearAll
 
 HeatTransfer::usage="HeatTransfer[reg, time, material] simulates heat transfer on 2D Region reg.
 HeatTransfer[mesh, time, material] accepts ElementMesh mesh as description of geometry.";
@@ -337,7 +327,7 @@ HeatTransfer[region_?RegionQ,time_,material_,opts:OptionsPattern[]]:=Module[
 		HeatTransfer[mesh,time,material,opts],
 		$Failed
 	]
-]
+];
 
 (* ------------------------------------------------------------------------ *)
 
@@ -364,7 +354,7 @@ HeatTransfer[mesh_ElementMesh,time_,material_,opts:OptionsPattern[]]:=Module[
 		mesh,time,noSteps,
 		FilterRules[Join[{opts},Options[HeatTransfer]],Options@analysis]
 	]
-]
+];
 
 
 (* ::Subsection:: *)
@@ -389,4 +379,4 @@ With[
 		TrueQ@(ver>SMCSession[[16]]),
 		Message[HeatTransfer::version,ToString@ver]
 	]
-]
+];
