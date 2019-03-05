@@ -99,8 +99,8 @@ Cell[BoxData[
      RowBox[{
       RowBox[{"\"\<*\>\"", "<>", "ext"}], ",", 
       RowBox[{"NotebookDirectory", "[", "]"}]}], "]"}]}], 
-   "\[IndentingNewLine]", 
-   "]"}]}]], "Input",ExpressionUUID->"07419c92-1596-4f9c-a340-cdf52315ee8d"],
+   "\[IndentingNewLine]", "]"}]}]], "Input",
+ CellLabel->"In[9]:=",ExpressionUUID->"07419c92-1596-4f9c-a340-cdf52315ee8d"],
 
 Cell[BoxData[
  RowBox[{"With", "[", 
@@ -111,8 +111,8 @@ Cell[BoxData[
       RowBox[{"{", 
        RowBox[{
         RowBox[{"ParentDirectory", "@", 
-         RowBox[{"NotebookDirectory", "[", "]"}]}], ",", 
-        "\"\<LibraryResources\>\"", ",", "$SystemID"}], "}"}], "]"}]}], 
+         RowBox[{"NotebookDirectory", "[", "]"}]}], ",", "\"\<HeatTrans\>\"", 
+        ",", "\"\<LibraryResources\>\"", ",", "$SystemID"}], "}"}], "]"}]}], 
     "\[IndentingNewLine]", "}"}], ",", "\[IndentingNewLine]", 
    RowBox[{
     RowBox[{"If", "[", "\[IndentingNewLine]", 
@@ -139,7 +139,7 @@ Cell[BoxData[
          RowBox[{"DeleteFile", "[", "#", "]"}]}], "\[IndentingNewLine]", 
         ")"}], "&"}], ",", "\[IndentingNewLine]", "libraries"}], 
      "\[IndentingNewLine]", "]"}]}]}], "\[IndentingNewLine]", "]"}]], "Input",
- CellLabel->"In[10]:=",ExpressionUUID->"075b6b36-b17d-4fa1-adb3-3c24003cab36"]
+ CellLabel->"In[11]:=",ExpressionUUID->"075b6b36-b17d-4fa1-adb3-3c24003cab36"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -167,9 +167,9 @@ Cell[BoxData[
        RowBox[{"{", 
         RowBox[{
          RowBox[{"ParentDirectory", "@", 
-          RowBox[{"NotebookDirectory", "[", "]"}]}], ",", 
-         "\"\<LibraryResources\>\"", ",", "\"\<Source\>\""}], "}"}], "]"}]}], 
-     "\[IndentingNewLine]", "}"}], ",", "\[IndentingNewLine]", 
+          RowBox[{"NotebookDirectory", "[", "]"}]}], ",", "\"\<HeatTrans\>\"",
+          ",", "\"\<LibraryResources\>\"", ",", "\"\<Source\>\""}], "}"}], 
+       "]"}]}], "\[IndentingNewLine]", "}"}], ",", "\[IndentingNewLine]", 
     RowBox[{
      RowBox[{"If", "[", "\[IndentingNewLine]", 
       RowBox[{
@@ -197,7 +197,7 @@ Cell[BoxData[
        RowBox[{"FileNames", "[", "\"\<*.c\>\"", "]"}]}], 
       "\[IndentingNewLine]", "]"}]}]}], "\[IndentingNewLine]", 
    "]"}]}]], "Input",
- CellLabel->"In[11]:=",ExpressionUUID->"1d70a332-cd96-486a-aeb6-63494b86fc19"]
+ CellLabel->"In[12]:=",ExpressionUUID->"1d70a332-cd96-486a-aeb6-63494b86fc19"]
 }, Open  ]]
 }, Open  ]]
 },

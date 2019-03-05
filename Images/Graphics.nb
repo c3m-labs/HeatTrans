@@ -15,7 +15,7 @@ Cell[BoxData[
    "\[IndentingNewLine]", 
    RowBox[{"PacletDirectoryAdd", "@", "$projectRoot"}], "\[IndentingNewLine]", 
    RowBox[{"Get", "[", "\"\<HeatTrans`\>\"", "]"}]}]}]], "Input",
- CellLabel->"In[12]:=",ExpressionUUID->"0ecb9a51-289b-45b0-9f28-c6fbdc0c37eb"],
+ CellLabel->"In[1]:=",ExpressionUUID->"0ecb9a51-289b-45b0-9f28-c6fbdc0c37eb"],
 
 Cell[CellGroupData[{
 
@@ -35,14 +35,14 @@ Cell[BoxData[
     RowBox[{"Axes", "\[Rule]", "True"}], ",", "\[IndentingNewLine]", 
     RowBox[{"ImageSize", "\[Rule]", "600"}]}], "\[IndentingNewLine]", 
    "]"}]}]], "Input",
- CellLabel->"In[15]:=",ExpressionUUID->"e9d6197c-0333-47af-8b53-91ef7fafaf44"],
+ CellLabel->"In[4]:=",ExpressionUUID->"e9d6197c-0333-47af-8b53-91ef7fafaf44"],
 
 Cell[BoxData[
  RowBox[{"int", "=", 
   RowBox[{"HeatTransfer", "[", 
    RowBox[{"reg", ",", " ", "200", ",", " ", "$DefaultMaterial", ",", 
     RowBox[{"\"\<NoTimeSteps\>\"", "\[Rule]", "10"}]}], "]"}]}]], "Input",
- CellLabel->"In[16]:=",ExpressionUUID->"9b56f8d8-08e6-4ec1-9115-7c696e7b2a7b"],
+ CellLabel->"In[5]:=",ExpressionUUID->"9b56f8d8-08e6-4ec1-9115-7c696e7b2a7b"],
 
 Cell[BoxData[
  RowBox[{"logo", "=", 
@@ -65,7 +65,7 @@ Cell[BoxData[
     ",", "\[IndentingNewLine]", 
     RowBox[{"ImageSize", "\[Rule]", "1200"}]}], "\[IndentingNewLine]", 
    "]"}]}]], "Input",
- CellLabel->"In[17]:=",ExpressionUUID->"8aa1a589-9b16-4c3e-b375-167958fcffa9"],
+ CellLabel->"In[6]:=",ExpressionUUID->"8aa1a589-9b16-4c3e-b375-167958fcffa9"],
 
 Cell[BoxData[
  RowBox[{"Export", "[", "\[IndentingNewLine]", 
@@ -75,7 +75,7 @@ Cell[BoxData[
      RowBox[{"$projectRoot", ",", "\"\<Images\>\"", ",", "\"\<Logo.png\>\""}],
       "}"}], "]"}], ",", "\[IndentingNewLine]", "logo"}], 
   "\[IndentingNewLine]", "]"}]], "Input",
- CellLabel->"In[18]:=",ExpressionUUID->"c7cf7842-ac87-4e8b-9dcf-d60cd4c11435"]
+ CellLabel->"In[7]:=",ExpressionUUID->"c7cf7842-ac87-4e8b-9dcf-d60cd4c11435"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -107,13 +107,13 @@ Cell[BoxData[{
      RowBox[{"\"\<Density\>\"", "\[Rule]", "7800"}], ",", 
      RowBox[{"\"\<SpecificHeat\>\"", "\[Rule]", "470"}]}], "|>"}]}], 
   ";"}]}], "Input",
- CellLabel->"In[19]:=",ExpressionUUID->"a3e89a4a-f1dc-4122-8a50-497e60229c2b"],
+ CellLabel->"In[8]:=",ExpressionUUID->"a3e89a4a-f1dc-4122-8a50-497e60229c2b"],
 
 Cell[BoxData[
  RowBox[{"result", "=", 
   RowBox[{"HeatTransfer", "[", 
    RowBox[{"region", ",", "endTime", ",", "material"}], "]"}]}]], "Input",
- CellLabel->"In[22]:=",ExpressionUUID->"968f18de-ffa0-46e7-9a4f-13f6657c9794"],
+ CellLabel->"In[11]:=",ExpressionUUID->"968f18de-ffa0-46e7-9a4f-13f6657c9794"],
 
 Cell[BoxData[
  RowBox[{"example1", "=", 
@@ -139,7 +139,7 @@ Cell[BoxData[
      RowBox[{"{", 
       RowBox[{"800", ",", "300"}], "}"}]}]}], "\[IndentingNewLine]", 
    "]"}]}]], "Input",
- CellLabel->"In[23]:=",ExpressionUUID->"b31346a4-c696-4c76-acae-24e971089a61"],
+ CellLabel->"In[12]:=",ExpressionUUID->"b31346a4-c696-4c76-acae-24e971089a61"],
 
 Cell[BoxData[
  RowBox[{"Export", "[", "\[IndentingNewLine]", 
@@ -150,7 +150,7 @@ Cell[BoxData[
      "$projectRoot", ",", "\"\<Images\>\"", ",", "\"\<Plot3D.png\>\""}], 
      "}"}], "]"}], ",", "\[IndentingNewLine]", "example1"}], 
   "\[IndentingNewLine]", "]"}]], "Input",
- CellLabel->"In[24]:=",ExpressionUUID->"7cf774b5-60b8-4217-8022-ed3748278014"]
+ CellLabel->"In[13]:=",ExpressionUUID->"7cf774b5-60b8-4217-8022-ed3748278014"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -179,7 +179,7 @@ Cell[BoxData[
     RowBox[{"Alignment", "\[Rule]", "Center"}], ",", "\[IndentingNewLine]", 
     RowBox[{"FrameStyle", "\[Rule]", "Thick"}]}], "\[IndentingNewLine]", 
    "]"}]}]], "Input",
- CellLabel->"In[25]:=",ExpressionUUID->"bc58d7f8-b9ac-4597-b18c-03623f532564"],
+ CellLabel->"In[14]:=",ExpressionUUID->"bc58d7f8-b9ac-4597-b18c-03623f532564"],
 
 Cell[BoxData[
  RowBox[{"Export", "[", "\[IndentingNewLine]", 
@@ -187,14 +187,14 @@ Cell[BoxData[
    RowBox[{"FileNameJoin", "[", 
     RowBox[{"{", 
      RowBox[{
-     "$projectRoot", ",", "\"\<FrontEnd\>\"", ",", "\"\<Icon.png\>\""}], 
-     "}"}], "]"}], ",", "\[IndentingNewLine]", "icon", ",", 
-   "\[IndentingNewLine]", 
+     "$projectRoot", ",", "\"\<HeatTrans\>\"", ",", "\"\<FrontEnd\>\"", ",", 
+      "\"\<Icon.png\>\""}], "}"}], "]"}], ",", "\[IndentingNewLine]", "icon", 
+   ",", "\[IndentingNewLine]", 
    RowBox[{"ImageSize", "\[Rule]", 
     RowBox[{"{", 
      RowBox[{"46", ",", "46"}], "}"}]}]}], "\[IndentingNewLine]", 
   "]"}]], "Input",
- CellLabel->"In[26]:=",ExpressionUUID->"7688cad2-c162-4276-8bd6-f81c6260c615"]
+ CellLabel->"In[16]:=",ExpressionUUID->"7688cad2-c162-4276-8bd6-f81c6260c615"]
 }, Open  ]]
 },
 WindowSize->{958, 1086},

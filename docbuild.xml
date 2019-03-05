@@ -33,7 +33,7 @@
 	<property name="pacletName" value="HeatTrans"/>
 	<property name="app.name" value="HeatTrans"/>
 	<property name="pacletContainer" value="HeatTrans"/>
-	<property name="docInputDir" value="Documentation"/>
+	<property name="docInputDir" value="HeatTrans/Documentation"/>
 	<property name="docOutputDir" value="Documentation"/>
 	<property name="dist" value="${basedir}/build" />
 	
@@ -118,7 +118,7 @@ or set Mathematica.DocumentationBuild.createHTML.setting to Mathematica.Document
 	</target>
 	
 	<target name="setupPaclet" if="buildNBDocs">	
-		<copy file="${basedir}/PacletInfo.m" todir="${dist}/${pacletContainer}" overwrite="true" />
+		<copy file="${basedir}/HeatTrans/PacletInfo.m" todir="${dist}/${pacletContainer}" overwrite="true" />
 		<copy todir="${dist}/${pacletContainer}/${docOutputDir}" overwrite="true" >
 		<fileset dir="${basedir}/${docInputDir}">
 		    <exclude name="*/Guides/**"/>

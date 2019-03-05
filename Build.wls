@@ -35,9 +35,10 @@ getGitCommitCount[dir_]:=Module[{value},
 
 $name="HeatTrans";
 (* Get the distribution directory by using this notebook\[CloseCurlyQuote]s directory. *)
-$source=If[$Notebooks,NotebookDirectory[],Directory[]];
+$rootDir=If[$Notebooks,NotebookDirectory[],Directory[]];
+$source=FileNameJoin[{$rootDir,$name}];
 (* Construct the target directory from this notebooks base directory. *)
-$target=FileNameJoin[{$source,"build",$name}];
+$target=FileNameJoin[{$rootDir,"build",$name}];
 
 
 $helpMessage=("  Usage: Build.wls [options]
@@ -86,8 +87,8 @@ Module[{directories},
 Module[{original, modified,noCommits,revision,internalQ},
 
 	original=Import[FileNameJoin[{$source,"PacletInfo.m"}]];
-	noCommits=getGitCommitCount[$source];
-	revision=getGitRevision[$source];
+	noCommits=getGitCommitCount[$rootDir];
+	revision=getGitRevision[$rootDir];
 	internalQ=Not@MemberQ[Rest@$ScriptCommandLine,"--release"];
 		
 	(* Description of git repository (git describe ...) returns a string that cannot 
@@ -111,7 +112,7 @@ Module[{pacletPath,newPaclet},
 	Needs["PacletManager`"];
 	
 	(* Change into the build directory and create the paclet. *)	
-	SetDirectory[FileNameJoin[{$source,"build"}]];
+	SetDirectory[FileNameJoin[{$rootDir,"build"}]];
 	pacletPath=PackPaclet[$name];
 	ResetDirectory[];
 	
