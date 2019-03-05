@@ -10,3 +10,6 @@ AceShare
 
 # Ignore stuff related to building paclet
 build
+
+# Folder created by IntelliJ IDEA editor
+.idea
