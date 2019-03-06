@@ -13,18 +13,18 @@ with [AceFEM](http://symech.fgg.uni-lj.si/) framework.
 The following description is for people who just want to use the package functionality and are not interested in package development.
 
 To use _HeatTrans_ package you need Mathematica version 11.1 or later and
-AceFEM package, version 6.912 or later ([trial](http://symech.fgg.uni-lj.si/Download.htm) version).
+AceFEM package, version 6.912 or later (get [trial](http://symech.fgg.uni-lj.si/Download.htm) version).
 Supported operating systems are 64-bit Windows, MacOS and Linux.
 
 _HeatTrans_ package is released in the `.paclet` file format, which contains code, documentation and other necessary resources.
-Download the latest `.paclet` file from the [repository "releases" page](https://github.com/c3m-labs/HeatTrans/releases)
+Download `.paclet` file the latest version from the repository ["releases"](https://github.com/c3m-labs/HeatTrans/releases)  page
 to your computer and install it by evaluating the following command in the Mathematica:
 
 ```mathematica
-(* This is usually loaded automatically at kernel startup. *)
+(* This built-in package is usually loaded automatically at kernel startup. *)
 Needs["PacletManager`"]
 
-(* Download .paclet file from repository "releases" page. *)
+(* Path to .paclet file downloaded from repository "releases" page. *)
 PacletInstall["full/path/to/HeatTrans-X.Y.Z.paclet"]
 ```
 
@@ -38,7 +38,6 @@ All versions can be uninstalled with:
 ```mathematica
 PacletUninstall["HeatTrans"]
 ```
-
 
 ## Usage
 
