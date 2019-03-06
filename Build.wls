@@ -69,6 +69,11 @@ Module[{directories},
 	];
 	(* Delete old and copy the new source directories. 
 	"Documentation" directory is already created by documentation build procedure. *)
+	If[
+		Not@FileExistsQ[FileNameJoin[{$target,"Documentation"}]],
+		Print["  Warning! Documentation directory was not found in build folder."]
+	];
+	
 	directories={"FrontEnd","Kernel","LibraryResources"};
 	Map[
 		If[
@@ -123,7 +128,7 @@ Module[{pacletPath,newPaclet},
 	
 	If[
 		Length@PacletFind["HeatTrans"]===1,
-		Print["Build succesfull."];Quit[0],
-		Print["Build failed."];Quit[1]
+		Print["  ",FileNameTake[pacletPath]," built and installed succesfully."];Quit[0],
+		Print["Paclet build failed."];Quit[1]
 	]
 ]
