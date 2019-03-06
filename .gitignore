@@ -13,3 +13,4 @@ build
 
 # Folder created by IntelliJ IDEA editor
 .idea
+*.iml
