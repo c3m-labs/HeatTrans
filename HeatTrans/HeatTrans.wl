@@ -29,12 +29,12 @@ If[
 ];
 
 (* "AceFEM`" context should be called before "AceCommon`", because it loads the AceFEM package,
-meanwhile "AceCommon`" doesn't load the package, 
-but puts this Context on $ContextPath inside the package. *)
+meanwhile "AceCommon`" doesn't load the package, but puts it on $ContextPath inside the package. *)
 BeginPackage["HeatTrans`",{"NDSolve`FEM`","AceFEM`","AceCommon`"}];
 
 (* Clear definitions from package symbols in public and private context. *)
 ClearAll["`*","`*`*"];
+
 
 (* ::Subsection::Closed:: *)
 (*Public symbols*)
@@ -71,11 +71,13 @@ $packageDirectory=ReplaceAll[
 
 (* This finds element library (.dll or similar) in appropriate directory.
 If it doesn't exist it compiles it from source (.C file). This avoids problems
-with compilation of elements for other systems, assuming users have appropriate 
+with compilation of elements for other operating systems, assuming users have appropriate 
 compiler installed. *)
 
-(* Attach message to General symbol instead of some package symbol. *)
-General::unsupported="$SystemID `1` is not supported.";
+(* Messages are attached to the main symbol which uses the function to find element library.*)
+HeatTransfer::unsupported="$SystemID `1` is not supported in this package.";
+HeatTransfer::compile="Element library `1` was not found for this $SystemID.
+It will be compiled from source (.C) and saved for reuse.";
 
 getLibrary[name_]:=Module[
 	{ext,srcDir,libDir,src,lib},
@@ -83,7 +85,7 @@ getLibrary[name_]:=Module[
 		"Windows-x86-64",".W64.dll",
 		"Linux-x86-64",".L64.dll",
 		"MacOSX-x86-64",".M64.dll",
-		_,Message[General::unsupported,$SystemID];Abort[]
+		_,Message[HeatTransfer::unsupported,$SystemID];Abort[]
 	];
 	
 	srcDir=FileNameJoin[{$packageDirectory,"LibraryResources","Source"}];
@@ -91,6 +93,7 @@ getLibrary[name_]:=Module[
 	src=FileNameJoin[{srcDir,name<>".c"}];
 	lib=FileNameJoin[{libDir,name<>ext}];
 	
+	(* Use message attached to General symbol instead of some package symbol. *)
 	If[
 		Not@FileExistsQ[src],
 		Message[General::noopen,src];Abort[]
@@ -101,6 +104,7 @@ getLibrary[name_]:=Module[
 	and copy it to appropriate directory. *)
 	If[
 		Not@FileExistsQ[lib],
+		Message[HeatTransfer::compile,FileNameTake@lib];
 		SMTMakeDll@src;
 		CopyFile[FileNameJoin[{srcDir,FileNameTake@lib}],lib];
 		DeleteFile[FileNameJoin[{srcDir,FileNameTake@lib}]]
@@ -117,8 +121,9 @@ getLibrary[name_]:=Module[
 (*Mesh*)
 
 
-(* This function is copied from FEMAddOns package 
-( https://github.com/WolframResearch/FEMAddOns ) *)
+(* This function improves the quality of 2D mesh. 
+It is copied from FEMAddOns package ( https://github.com/WolframResearch/FEMAddOns ) *)
+
 laplacianElementMeshSmoothing[mesh_]:=Module[
 	{n, vec, mat, adjacencyMatrix, mass, laplacian, typoOpt,
 	bndVertices, interiorVertices, stiffness, load, newCoords},
