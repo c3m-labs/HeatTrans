@@ -1,6 +1,6 @@
 # HeatTrans
 
-[![releases](https://img.shields.io/github/release-pre/c3m-labs/HeatTrans.svg)](https://github.com/c3m-labs/HeatTrans/releases)
+[![releases](https://img.shields.io/github/release/c3m-labs/HeatTrans.svg)](https://github.com/c3m-labs/HeatTrans/releases)
 [![SemVer 2.0.0](https://img.shields.io/badge/SemVer-2.0.0-brightgreen.svg)](http://semver.org/spec/v2.0.0.html)
 
 [Mathematica](http://www.wolfram.com/mathematica/) package for non-stationary heat transfer simulation
