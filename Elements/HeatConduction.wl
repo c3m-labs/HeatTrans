@@ -1,28 +1,32 @@
 (* ::Package:: *)
 
-(* ::Subsection::Closed:: *)
+(* ::Subsection:: *)
 (*Begin package*)
 
 
-BeginPackage["HeatTrans`Element`Conduction`",{"AceFEM`","AceCommon`","AceGen`","AceEnvironment`"}];
-(*BeginPackage["HeatTrans`Element`Conduction`"];*)
+(* We will keep element subroutine generating functions in a Global` context to avoid
+complications with symbol shadowing. 
+One reason for this might be non-conventional AceGen context structure. *)
+
+(*BeginPackage["HeatTrans`Element`Conduction`",{"AceFEM`","AceCommon`","AceGen`","AceEnvironment`"}];*)
 
 
 makeHeatConductionElement::usage="makeHeatConductionElement[model, topology] generates heat conduction element for AceFEM .";
 
 
-(* ::Subsection::Closed:: *)
+(* ::Subsection:: *)
 (*Element code*)
 
 
 (*Begin["`Private`"];*)
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*Phases and modules*)
 
 
-inputOutput//Clear;
+inputOutput//ClearAll;
+
 inputOutput[]:=(
 	XYZ\[RightTee]SMSReal[Table[nd$$[i,"X",j],{i,SMSNoNodes},{j,SMSNoDimensions}]];
 	{Xi,Yi}\[DoubleRightTee]Transpose[XYZ];
@@ -33,10 +37,11 @@ inputOutput[]:=(
 	{t,\[CapitalDelta]t}\[RightTee]SMSReal[{rdata$$["Time"],rdata$$["TimeIncrement"]}];
 	
 	{kt0,kt1,kt2,rho0,rho1,rho2,cp0,cp1,cp2,Q}\[RightTee]SMSReal[Table[es$$["Data",i],{i,Length[SMSDomainDataNames]}]];
-)
+);
 
 
-discretization//Clear;
+discretization//ClearAll;
+
 discretization[model_String,topology_String]:=(
 	{\[Xi],\[Eta],\[Zeta],wGauss}\[RightTee]Array[SMSReal[es$$["IntPoints",#1,IpIndex]]&,4];
 	Ni\[DoubleRightTee]Switch[
@@ -70,10 +75,11 @@ discretization[model_String,topology_String]:=(
 		"AX",
 		2Pi*Y*Jd*wGauss
 	];
-)
+);
 
 
-constitutiveEquations//Clear;
+constitutiveEquations//ClearAll;
+
 constitutiveEquations[task_String]:=(
 	
 	Ti\[DoubleRightTee]Flatten[dof];
@@ -94,7 +100,7 @@ constitutiveEquations[task_String]:=(
 	];
 	
 	\[CapitalDelta]T\[DoubleRightTee]SMSD[T,{X,Y,Z},"Dependency"->\[Xi]\[Eta]\[Zeta]ToXYZ];
-	(* This use uf SMSMax avoids division by 0 in the first analysis step if
+	(* This use of SMSMax avoids division by 0 in the first analysis step if
 	we want to record initial state at time==0. Small value insteadof \[CapitalDelta]t is chosen arbitrarily. *)
 	\[Rho]\[CapitalDelta]T\[DoubleRightTee]SMSFreeze[1/SMSMax[\[CapitalDelta]t,10^-6]*rho*cp*(T-Tp)];
 	constant={\[Rho]\[CapitalDelta]T};
@@ -103,7 +109,7 @@ constitutiveEquations[task_String]:=(
 );
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*Main function*)
 
 
@@ -186,14 +192,14 @@ makeHeatConductionElement[model_String,topology_String]:=Block[
 	SMSSubTitle=model/.{"AX"->"Axisymmetric model","D2"->"2D continuum model"};
 	
 	SMSWrite[];
-]
+];
 
 
-(* ::Subsection::Closed:: *)
+(* ::Subsection:: *)
 (*End package*)
 
 
 (*End[];*)
 
 
-EndPackage[];
+(*EndPackage[];*)

@@ -1,27 +1,32 @@
 (* ::Package:: *)
 
-(* ::Subsection::Closed:: *)
+(* ::Subsection:: *)
 (*Begin package*)
 
 
-BeginPackage["HeatTrans`Element`Convection`",{"AceFEM`","AceCommon`","AceGen`","AceEnvironment`"}];
+(* We will keep element subroutine generating functions in a Global` context to avoid
+complications with symbol shadowing. 
+One reason for this might be non-conventional AceGen context structure. *)
+
+(*BeginPackage["HeatTrans`Element`Convection`",{"AceFEM`","AceCommon`","AceGen`","AceEnvironment`"}];*)
 
 
 makeHeatConvectionElement::usage="makeHeatConvectionElement[model, topology] generates heat convection element for AceFEM.";
 
 
-(* ::Subsection::Closed:: *)
+(* ::Subsection:: *)
 (*Element code*)
 
 
 (*Begin["`Private`"];*)
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*Phases and modules*)
 
 
-inputOutput//Clear;
+inputOutput//ClearAll;
+
 inputOutput[]:=(
 	XYZ\[RightTee]SMSReal[Table[nd$$[i,"X",j],{i,SMSNoNodes},{j,SMSNoDimensions}]];
 	{Xi,Yi}\[DoubleRightTee]Transpose[XYZ];
@@ -31,10 +36,11 @@ inputOutput[]:=(
 	{t,\[CapitalDelta]t}\[RightTee]SMSReal[{rdata$$["Time"],rdata$$["TimeIncrement"]}];
 	
 	{h\[DoubleStruckG],Tamb\[DoubleStruckG]}\[RightTee]SMSReal[Table[es$$["Data",i],{i,Length[SMSDomainDataNames]}]];
-)
+);
 
 
-discretization//Clear;
+discretization//ClearAll;
+
 discretization[model_String,topology_String]:=(
 	{\[Xi],\[Eta],\[Zeta],wGauss}\[RightTee]Array[SMSReal[es$$["IntPoints",#1,IpIndex]]&,4];
 	Ni\[DoubleRightTee]Switch[
@@ -58,10 +64,11 @@ discretization[model_String,topology_String]:=(
 		"AX",
 		wGauss*2Pi*Y*SMSSqrt[r\[Xi].r\[Xi]]
 	];
-)
+);
 
 
-constitutiveEquations//Clear;
+constitutiveEquations//ClearAll;
+
 constitutiveEquations[task_String]:=(
 	
 	Ti\[DoubleRightTee]Flatten[dof];
@@ -80,7 +87,7 @@ constitutiveEquations[task_String]:=(
 );
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*Main function*)
 
 
@@ -152,14 +159,14 @@ makeHeatConvectionElement[model_String,topology_String]:=Block[
 	SMSSubTitle=model/.{"AX"->"Axisymmetric model","D2"->"2D continuum model"};
 	
 	SMSWrite[];
-]
+];
 
 
-(* ::Subsection::Closed:: *)
+(* ::Subsection:: *)
 (*End package*)
 
 
 (*End[];*)
 
 
-EndPackage[];
+(*EndPackage[];*)

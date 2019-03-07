@@ -1,7 +1,15 @@
 Notebook[{
 Cell[BoxData[
- RowBox[{"Get", "[", "\"\<AceGen`\>\"", "]"}]], "Input",
- CellLabel->"In[1]:=",ExpressionUUID->"53a6dd32-548f-4fe2-b8ac-1d7fc5c38ce1"],
+ RowBox[{
+  RowBox[{"(*", " ", 
+   RowBox[{
+   "It", " ", "is", " ", "recommneded", " ", "to", " ", "quit", " ", "the", 
+    " ", "Mathematica", " ", "kernel", " ", "after", " ", "running", " ", 
+    "this", " ", 
+    RowBox[{"notebook", "."}]}], " ", "*)"}], "\[IndentingNewLine]", 
+  RowBox[{
+  "Get", "[", "\"\<AceGen`\>\"", 
+   "]"}]}]], "Input",ExpressionUUID->"53a6dd32-548f-4fe2-b8ac-1d7fc5c38ce1"],
 
 Cell[CellGroupData[{
 
@@ -14,21 +22,10 @@ Cell["Conduction", \
 "Subsubsection",ExpressionUUID->"8742ae7e-0536-470c-a2c1-cb3b4a9436c3"],
 
 Cell[BoxData[
- RowBox[{
-  RowBox[{"(*", " ", 
-   RowBox[{
-    RowBox[{"Suppress", " ", "messages", " ", "about", " ", "shadowing"}], 
-    ",", " ", 
-    RowBox[{
-     RowBox[{"probably", " ", "because", " ", "of", " ", "non"}], "-", 
-     RowBox[{"conventional", " ", "AceGen", " ", "context", " ", 
-      RowBox[{"structure", "."}]}]}]}], " ", "*)"}], "\[IndentingNewLine]", 
-  RowBox[{
-   RowBox[{"Get", "[", 
-    RowBox[{"\"\<HeatConduction.wl\>\"", ",", 
-     RowBox[{"Path", "\[Rule]", 
-      RowBox[{"NotebookDirectory", "[", "]"}]}]}], "]"}], "//", 
-   "Quiet"}]}]], "Input",
+ RowBox[{"Get", "[", 
+  RowBox[{"\"\<HeatConduction.wl\>\"", ",", 
+   RowBox[{"Path", "\[Rule]", 
+    RowBox[{"NotebookDirectory", "[", "]"}]}]}], "]"}]], "Input",
  CellLabel->"In[2]:=",ExpressionUUID->"0a262bd2-d6a7-4c96-be48-3c759f06c381"],
 
 Cell[BoxData[
@@ -48,12 +45,10 @@ Cell["Convection", \
 "Subsubsection",ExpressionUUID->"04241edb-ec99-4840-a809-661df51a2707"],
 
 Cell[BoxData[
- RowBox[{
-  RowBox[{"Get", "[", 
-   RowBox[{"\"\<HeatConvection.wl\>\"", ",", 
-    RowBox[{"Path", "\[Rule]", 
-     RowBox[{"NotebookDirectory", "[", "]"}]}]}], "]"}], "//", 
-  "Quiet"}]], "Input",
+ RowBox[{"Get", "[", 
+  RowBox[{"\"\<HeatConvection.wl\>\"", ",", 
+   RowBox[{"Path", "\[Rule]", 
+    RowBox[{"NotebookDirectory", "[", "]"}]}]}], "]"}]], "Input",
  CellLabel->"In[5]:=",ExpressionUUID->"98a5c141-c8b7-4dc6-8dd2-9a5ac6548b18"],
 
 Cell[BoxData[
@@ -84,7 +79,7 @@ Cell["Copy libraries", \
 "Subsubsection",ExpressionUUID->"61c698c5-7e04-4ab5-8c78-56ecb4a931cf"],
 
 Cell[BoxData[
- RowBox[{"libraries", "=", 
+ RowBox[{"$libraries", "=", 
   RowBox[{"With", "[", 
    RowBox[{
     RowBox[{"{", "\[IndentingNewLine]", 
@@ -103,43 +98,56 @@ Cell[BoxData[
  CellLabel->"In[9]:=",ExpressionUUID->"07419c92-1596-4f9c-a340-cdf52315ee8d"],
 
 Cell[BoxData[
- RowBox[{"With", "[", 
-  RowBox[{
-   RowBox[{"{", "\[IndentingNewLine]", 
-    RowBox[{"dir", "=", 
-     RowBox[{"FileNameJoin", "[", 
-      RowBox[{"{", 
-       RowBox[{
-        RowBox[{"ParentDirectory", "@", 
-         RowBox[{"NotebookDirectory", "[", "]"}]}], ",", "\"\<HeatTrans\>\"", 
-        ",", "\"\<LibraryResources\>\"", ",", "$SystemID"}], "}"}], "]"}]}], 
-    "\[IndentingNewLine]", "}"}], ",", "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"(*", " ", 
+   RowBox[{"Copy", " ", "all", " ", "libraries", " ", 
+    RowBox[{"(", 
+     RowBox[{".", "dll"}], ")"}], " ", "to", " ", "appropriate", " ", 
+    RowBox[{"directory", ".", " ", "Its"}], " ", "name", " ", "depends", " ", 
+    "on", " ", "current", " ", "operating", " ", 
+    RowBox[{"system", ".", " ", "Directory"}], " ", "is", " ", "first", " ", 
+    "created", " ", "if", " ", "it", " ", 
+    RowBox[{"doesn", "'"}], "t", " ", 
+    RowBox[{"exist", "."}]}], " ", "*)"}], "\[IndentingNewLine]", 
+  RowBox[{"With", "[", 
    RowBox[{
-    RowBox[{"If", "[", "\[IndentingNewLine]", 
-     RowBox[{
-      RowBox[{"Not", "@", 
-       RowBox[{"DirectoryQ", "[", "dir", "]"}]}], ",", "\[IndentingNewLine]", 
-      RowBox[{"CreateDirectory", "[", 
-       RowBox[{"dir", ",", 
-        RowBox[{"CreateIntermediateDirectories", "\[Rule]", "True"}]}], 
-       "]"}]}], "\[IndentingNewLine]", "]"}], ";", "\[IndentingNewLine]", 
-    RowBox[{"Map", "[", "\[IndentingNewLine]", 
-     RowBox[{
-      RowBox[{
-       RowBox[{"(", "\[IndentingNewLine]", 
+    RowBox[{"{", "\[IndentingNewLine]", 
+     RowBox[{"dir", "=", 
+      RowBox[{"FileNameJoin", "[", "\[IndentingNewLine]", 
+       RowBox[{"{", 
         RowBox[{
-         RowBox[{"CopyFile", "[", 
-          RowBox[{"#", ",", 
-           RowBox[{"FileNameJoin", "[", 
-            RowBox[{"{", 
-             RowBox[{"dir", ",", 
-              RowBox[{"FileNameTake", "[", "#", "]"}]}], "}"}], "]"}], ",", 
-           RowBox[{"OverwriteTarget", "\[Rule]", "True"}]}], "]"}], ";", 
-         "\[IndentingNewLine]", 
-         RowBox[{"DeleteFile", "[", "#", "]"}]}], "\[IndentingNewLine]", 
-        ")"}], "&"}], ",", "\[IndentingNewLine]", "libraries"}], 
-     "\[IndentingNewLine]", "]"}]}]}], "\[IndentingNewLine]", "]"}]], "Input",
- CellLabel->"In[11]:=",ExpressionUUID->"075b6b36-b17d-4fa1-adb3-3c24003cab36"]
+         RowBox[{"ParentDirectory", "@", 
+          RowBox[{"NotebookDirectory", "[", "]"}]}], ",", "\"\<HeatTrans\>\"",
+          ",", "\"\<LibraryResources\>\"", ",", "$SystemID"}], "}"}], 
+       "\[IndentingNewLine]", "]"}]}], "\[IndentingNewLine]", "}"}], ",", 
+    "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"If", "[", "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{"Not", "@", 
+        RowBox[{"DirectoryQ", "[", "dir", "]"}]}], ",", "\[IndentingNewLine]", 
+       RowBox[{"CreateDirectory", "[", 
+        RowBox[{"dir", ",", 
+         RowBox[{"CreateIntermediateDirectories", "\[Rule]", "True"}]}], 
+        "]"}]}], "\[IndentingNewLine]", "]"}], ";", "\[IndentingNewLine]", 
+     RowBox[{"Map", "[", "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"(", "\[IndentingNewLine]", 
+         RowBox[{
+          RowBox[{"CopyFile", "[", 
+           RowBox[{"#", ",", 
+            RowBox[{"FileNameJoin", "[", 
+             RowBox[{"{", 
+              RowBox[{"dir", ",", 
+               RowBox[{"FileNameTake", "[", "#", "]"}]}], "}"}], "]"}], ",", 
+            RowBox[{"OverwriteTarget", "\[Rule]", "True"}]}], "]"}], ";", 
+          "\[IndentingNewLine]", 
+          RowBox[{"DeleteFile", "[", "#", "]"}]}], "\[IndentingNewLine]", 
+         ")"}], "&"}], ",", "\[IndentingNewLine]", "$libraries"}], 
+      "\[IndentingNewLine]", "]"}]}]}], "\[IndentingNewLine]", 
+   "]"}]}]], "Input",
+ CellLabel->"In[10]:=",ExpressionUUID->"075b6b36-b17d-4fa1-adb3-3c24003cab36"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -152,8 +160,8 @@ Cell[BoxData[
   RowBox[{"(*", " ", 
    RowBox[{
     RowBox[{
-    "This", " ", "is", " ", "essential", " ", "when", " ", "C", " ", 
-     "sources", " ", "are", " ", "provided", " ", "in", " ", "the", " ", 
+    "This", " ", "is", " ", "essential", " ", "if", " ", "the", " ", "C", " ",
+      "sources", " ", "are", " ", "provided", " ", "in", " ", "the", " ", 
      "paclet"}], ",", " ", 
     RowBox[{
     "for", " ", "purpose", " ", "of", " ", "compatibility", " ", "with", " ", 
@@ -163,13 +171,14 @@ Cell[BoxData[
    RowBox[{
     RowBox[{"{", "\[IndentingNewLine]", 
      RowBox[{"dir", "=", 
-      RowBox[{"FileNameJoin", "[", 
+      RowBox[{"FileNameJoin", "[", "\[IndentingNewLine]", 
        RowBox[{"{", 
         RowBox[{
          RowBox[{"ParentDirectory", "@", 
           RowBox[{"NotebookDirectory", "[", "]"}]}], ",", "\"\<HeatTrans\>\"",
           ",", "\"\<LibraryResources\>\"", ",", "\"\<Source\>\""}], "}"}], 
-       "]"}]}], "\[IndentingNewLine]", "}"}], ",", "\[IndentingNewLine]", 
+       "\[IndentingNewLine]", "]"}]}], "\[IndentingNewLine]", "}"}], ",", 
+    "\[IndentingNewLine]", 
     RowBox[{
      RowBox[{"If", "[", "\[IndentingNewLine]", 
       RowBox[{
@@ -197,7 +206,7 @@ Cell[BoxData[
        RowBox[{"FileNames", "[", "\"\<*.c\>\"", "]"}]}], 
       "\[IndentingNewLine]", "]"}]}]}], "\[IndentingNewLine]", 
    "]"}]}]], "Input",
- CellLabel->"In[12]:=",ExpressionUUID->"1d70a332-cd96-486a-aeb6-63494b86fc19"]
+ CellLabel->"In[11]:=",ExpressionUUID->"1d70a332-cd96-486a-aeb6-63494b86fc19"]
 }, Open  ]]
 }, Open  ]]
 },
