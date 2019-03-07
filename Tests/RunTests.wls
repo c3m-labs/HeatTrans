@@ -5,7 +5,7 @@ $helpMessage=("  Usage: RunTests.wls [options]
 
   Options:
     -h, --help                   Output usage information
-    -c, --console                Print CDriver messages")
+    -c, --console                Print CDriver messages");
 
 
 If[
@@ -21,7 +21,10 @@ By default we assume script is started from git root directory. *)
 PacletDirectoryAdd@Directory[];
 Get["HeatTrans`"];
 
-Print["  Using Mathematica: ",$VersionNumber," / AceFEM: ",SMCSession[[16]]];
+With[
+	{ver="Version"/.PacletInformation["AceFEM"]},
+	Print["  Using Mathematica: ",$VersionNumber," / AceFEM: ",ver]
+];
 
 SetOptions[
 	HeatTransfer,
@@ -34,7 +37,7 @@ Module[
 	report=TestReport[
 		FileNameJoin[{Directory[],"Tests","Tests.wl"}]
 	];
-	time=QuantityMagnitude@report["TimeElapsed"];
+	time=Round[QuantityMagnitude@report["TimeElapsed"],0.01];
 	results=report["TestResults"];
 	count=Length[results];
 	failIdx=report["TestsFailedIndices"];
@@ -54,4 +57,4 @@ Module[
 		];
 		Quit[1] (* exit code if any test fails *)
 	]
-]
+];

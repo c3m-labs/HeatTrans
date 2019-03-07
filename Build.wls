@@ -5,7 +5,8 @@
 (*Git functions*)
 
 
-getGitRevision[dir_]:=Module[{description},
+getGitRevision[dir_]:=Module[
+	{description},
 	SetDirectory[dir];
 	(* For meaning of this see: https://git-scm.com/docs/git-describe *)
 	description=First[
@@ -14,10 +15,11 @@ getGitRevision[dir_]:=Module[{description},
 	];
 	ResetDirectory[];
 	description
-]
+];
 
 
-getGitCommitCount[dir_]:=Module[{value},
+getGitCommitCount[dir_]:=Module[
+	{value},
 	SetDirectory[dir];
 	(* For meaning of this see: https://git-scm.com/docs/git-describe *)
 	value=First[
@@ -45,10 +47,11 @@ $helpMessage=("  Usage: Build.wls [options]
 
   Options:
     -h, --help                   Output usage information
-    --release                    Build public release")
+    -r, --release                Build public release");
 
 
-Module[{directories},
+Module[
+	{directories},
 	If[
 		MemberQ[Rest@$ScriptCommandLine,"/?"|"-h"|"--help"],
 		Print[$helpMessage];Quit[1]
@@ -58,7 +61,7 @@ Module[{directories},
 		Not@DirectoryQ[$target],
 		CreateDirectory[$target,CreateIntermediateDirectories->True]
 	];
-	(* Copy some files from the source to the target directory. *)
+	(* Copy package files from the source to the target directory. *)
 	Map[
 		CopyFile[
 			FileNameJoin[{$source,#}],
@@ -68,12 +71,12 @@ Module[{directories},
 		{"HeatTrans.wl","PacletInfo.m"}
 	];
 	(* Delete old and copy the new source directories. 
-	"Documentation" directory is already created by documentation build procedure. *)
+	"Documentation" directory should be already created by documentation build procedure. *)
 	If[
 		Not@FileExistsQ[FileNameJoin[{$target,"Documentation"}]],
 		Print["  Warning! Documentation directory was not found in build folder."]
 	];
-	
+
 	directories={"FrontEnd","Kernel","LibraryResources"};
 	Map[
 		If[
@@ -86,15 +89,16 @@ Module[{directories},
 		CopyDirectory[FileNameJoin[{$source,#}],FileNameJoin[{$target,#}]]&,
 		directories
 	];
-]
+];
 
 
-Module[{original, modified,noCommits,revision,internalQ},
+Module[
+	{original, modified,noCommits,revision,internalQ},
 
 	original=Import[FileNameJoin[{$source,"PacletInfo.m"}]];
 	noCommits=getGitCommitCount[$rootDir];
 	revision=getGitRevision[$rootDir];
-	internalQ=Not@MemberQ[Rest@$ScriptCommandLine,"--release"];
+	internalQ=Not@MemberQ[Rest@$ScriptCommandLine,"-r"|"--release"];
 		
 	(* Description of git repository (git describe ...) returns a string that cannot 
 	be used as BuildNumber because only integers are accepted. 
@@ -110,12 +114,13 @@ Module[{original, modified,noCommits,revision,internalQ},
 		modified,
 		"Comments"->{"Paclet Info File","Created on "<>DateString[]}
 	];
-]
+];
 
 
-Module[{pacletPath,newPaclet},
-	Needs["PacletManager`"];
+Module[
+	{pacletPath,newPaclet},
 	
+	Needs["PacletManager`"];
 	(* Change into the build directory and create the paclet. *)	
 	SetDirectory[FileNameJoin[{$rootDir,"build"}]];
 	pacletPath=PackPaclet[$name];
@@ -131,4 +136,4 @@ Module[{pacletPath,newPaclet},
 		Print["  ",FileNameTake[pacletPath]," built and installed succesfully."];Quit[0],
 		Print["Paclet build failed."];Quit[1]
 	]
-]
+];

@@ -4,18 +4,17 @@
 (*Description*)
 
 
-(* ::Text:: *)
-(*These are various test for "HeatTrans" paclet.*)
+(* This file contains various (unit) tests for "HeatTrans" package. *)
 
-
-(* "HeatTrans.wl" must be loaded before running these tests, otherwise testing is aborted. *)
+(* "HeatTrans" package must be already loaded before running these tests, 
+	otherwise testing is aborted. *)
 If[
 	Not@MemberQ[$Packages,"HeatTrans`"],
 	Print["Error: Package is not loaded!"];Abort[];
 ];
 
 
-BeginTestSection["Tests"]
+BeginTestSection["Tests"];
 
 
 (* ::Subsection:: *)
@@ -33,7 +32,7 @@ VerificationTest[
 		]
 	],
 	TestID->"MakeMesh_success_order=1"
-]
+];
 
 
 VerificationTest[
@@ -47,14 +46,14 @@ VerificationTest[
 		]
 	],
 	TestID->"MakeMesh_success_order=2"
-]
+];
 
 
 VerificationTest[
 	MakeMesh[Disk[],"badValue"],
 	MakeMesh[Disk[],"badValue"],
 	TestID->"MakeMesh_badMeshOrder"
-]
+];
 
 
 VerificationTest[
@@ -62,7 +61,7 @@ VerificationTest[
 	$Failed,
 	{MakeMesh::badreg},
 	TestID->"MakeMesh_fail_3D_region"
-]
+];
 
 
 VerificationTest[
@@ -70,7 +69,7 @@ VerificationTest[
 	$Failed,
 	{MakeMesh::badreg},
 	TestID->"MakeMesh_fail_unbounded_region"
-]
+];
 
 
 (* ::Subsection:: *)
@@ -89,7 +88,7 @@ With[{
 		SameTest->MatchQ,
 		TestID->"HeatTransfer_success"
 	]
-]
+];
 
 
 VerificationTest[
@@ -97,7 +96,7 @@ VerificationTest[
 	$Failed,
 	{HeatTransfer::quadElms},
 	TestID->"HeatTransfer_fail_triangleElements"
-]
+];
 
 
 VerificationTest[
@@ -105,11 +104,11 @@ VerificationTest[
 	$Failed,
 	{HeatTransfer::timeSteps},
 	TestID->"HeatTransfer_fail_noTimeSteps"
-]
+];
 
 
 (* ::Subsection:: *)
 (*EndTestSection*)
 
 
-EndTestSection[]
+EndTestSection[];
