@@ -78,4 +78,4 @@ Therefore, there is less focus on building more advanced FEM modelling capabilit
 
 Please use this repository [issues](https://github.com/c3m-labs/HeatTrans/issues) page to submit bugs or feature ideas.
 Contributions to this repository are very welcome.
-Guidelines on how to build `.paclet` file from the source code can be found in [Development.md]( Development.md ) file.
+Guidelines on how to build `.paclet` file from the source code can be found in [CONTRIBUTING.md]( CONTRIBUTING.md ) file.

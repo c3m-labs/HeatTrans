@@ -1,4 +1,4 @@
-# Development of HeatTrans package
+# Contributing to package
 
 If you would like to modify HeatTrans package yourself or contribute back to the original repository,
 then the following instructions can help you.
