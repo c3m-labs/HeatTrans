@@ -254,48 +254,76 @@ setup[mesh_,material_,opts:OptionsPattern[]]:=Module[
 (*Analysis*)
 
 
-analysis//Options={
-	"InitialTemperature"->100.,
-	"AmbientTemperature"->20.,
-	"ConvectionCoefficient"->20.
-};
+analysisAceFEM//Options={StartingStepSize->Automatic,MaxStepSize->Automatic};
 
-analysis[mesh_,time_,noSteps_,opts:OptionsPattern[]]:=Module[
-	{initialTemp,ambientTemp,conCoeff,timeSteps,reaped,data},
+analysisAceFEM[mesh_,time_,parameters_,opts:OptionsPattern[]]:=Module[
+	{t0,\[CapitalDelta]tMin,\[CapitalDelta]tMax,step,reaped},
 	
-	initialTemp=OptionValue["InitialTemperature"];
-	ambientTemp=OptionValue["AmbientTemperature"];
-	conCoeff=Clip[OptionValue["ConvectionCoefficient"],{0.,Infinity}];
+	setup[mesh,parameters,opts];
 	
-	timeSteps=Subdivide[0.,time,noSteps];
+	SMTAddInitialBoundary["T",1->parameters["InitialTemperature"],"Type"->"InitialCondition"];
+	SMTDomainData["Surface","Data","h*"->parameters["ConvectionCoefficient"]];
+	SMTDomainData["Surface","Data","Tamb*"->parameters["AmbientTemperature"]];
 	
-	SMTAddInitialBoundary["T",1->initialTemp,"Type"->"InitialCondition"];
-	SMTDomainData["Surface","Data","h*"->conCoeff];
-	SMTDomainData["Surface","Data","Tamb*"->ambientTemp];
+	t0=(OptionValue[StartingStepSize]/.{Automatic->time/1000.});
+	\[CapitalDelta]tMax=(OptionValue[MaxStepSize]/.{Automatic->time/10.});
+	\[CapitalDelta]tMin=\[CapitalDelta]tMax/1000.;
 	
-	reaped=Reap@Do[
-		SMTNextStep["t"->t];
+	SMTNextStep["\[CapitalDelta]t"->t0];
+	reaped=Last@Reap@While[
 		While[
-			SMTConvergence[10^-8,15],
-			SMTNewtonIteration[];
+			(step=SMTConvergence[10^-8,10,{"Adaptive Time",7,\[CapitalDelta]tMin,\[CapitalDelta]tMax,time}]),
+			SMTNewtonIteration[]
 		];
-		(* Save AceFEM result files if appropriate option is given at setup.*)
+		If[step[[4]]==="MinBound",SMTStatusReport["Analyze"];SMTStepBack[]];
 		If[
-			MatchQ[SMTSession[[8]],1|2],
-			SMTPut[SMTIData["Step"],SMTRData["Time"]]
+			Not@step[[1]],
+			(* Save AceFEM result files if appropriate option is given at setup.*)
+			If[
+				MatchQ[SMTSession[[8]],1|2],
+				SMTPut[SMTIData["Step"],SMTRData["Time"]]
+			];
+			Sow@{SMTRData["Time"],SMTPostData["Temperature"]}
 		];
-		Sow@SMTPostData["Temperature"]
-		,
-		{t,timeSteps}
+		step[[3]],
+		If[step[[1]],SMTStepBack[]];
+		SMTNextStep["\[CapitalDelta]t"->step[[2]]]
 	];
 	
-	data=Transpose[Last@reaped,{2,1,3}];
 	(* Return InterpolatingFunction of temperature field, like NDSolve would.*)
 	ElementMeshInterpolation[
-		{timeSteps,mesh},
-		data,
+		{reaped[[1,All,1]],mesh},
+		Transpose[reaped[[All,All,2]],{2,1,3}],
 		InterpolationOrder->All,
 		"ExtrapolationHandler"->{Function[Indeterminate],"WarningMessage"->False}
+	]
+];
+
+
+analysisNDSolve//Options={StartingStepSize->Automatic,MaxStepSize->Automatic};
+
+analysisNDSolve[mesh_,time_,parameters_,opts:OptionsPattern[]]:=Module[
+	{iniTemp,ambTemp,conCoeff,rho,cp,k,t0,\[CapitalDelta]tMax},
+	(* This is repetitive, but connection with od strings with symbols is clear. *)
+	rho=parameters["Density"];
+	cp=parameters["SpecificHeat"];
+	k=parameters["Conductivity"];
+	iniTemp=parameters["InitialTemperature"];
+	ambTemp=parameters["AmbientTemperature"];
+	conCoeff=parameters["ConvectionCoefficient"];
+
+	t0=(OptionValue[StartingStepSize]/.{Automatic->time/1000.});
+	\[CapitalDelta]tMax=(OptionValue[MaxStepSize]/.{Automatic->time/10.});
+
+	NDSolveValue[{
+		rho*cp*D[u[t,x,y],t]-k*Laplacian[u[t,x,y],{x,y}]==NeumannValue[conCoeff*(ambTemp-u[t,x,y]),True],
+		u[0,x,y]==iniTemp
+		},
+		u,
+		{t,0,time},
+		{x,y}\[Element]mesh,
+		StartingStepSize->t0,
+		MaxStepSize->\[CapitalDelta]tMax
 	]
 ];
 
@@ -308,11 +336,18 @@ HeatTransfer::usage="HeatTransfer[reg, time, material] simulates heat transfer o
 HeatTransfer[mesh, time, material] accepts ElementMesh mesh as description of geometry.";
 HeatTransfer::quadElms="\"MeshElements\" of given ElementMesh should be QuadElement type.";
 HeatTransfer::timeSteps="Number of time steps `1` should be a positive integer.";
+HeatTransfer::bdmtd="Value of option Method->`1` should be \"AceFEM\", \"NDSolve\" or Automatic.";
 
-HeatTransfer//Options=Sort@Join[
-	Options@setup,Options@analysis,
-	{"NoTimeSteps"->Automatic,"MeshOrder"->1}
-];
+HeatTransfer//Options={
+	"InitialTemperature"->100.,
+	"AmbientTemperature"->20.,
+	"ConvectionCoefficient"->20.,
+	"NoTimeSteps"->Automatic,
+	"MeshOrder"->1,
+	Method->Automatic,
+	StartingStepSize->Automatic,
+	MaxStepSize->Automatic
+};
 
 HeatTransfer//SyntaxInformation={"ArgumentsPattern"->{_,_,_,OptionsPattern[HeatTransfer]}};
 
@@ -334,10 +369,8 @@ HeatTransfer[region_?RegionQ,time_,material_,opts:OptionsPattern[]]:=Module[
 	]
 ];
 
-(* ------------------------------------------------------------------------ *)
-
 HeatTransfer[mesh_ElementMesh,time_,material_,opts:OptionsPattern[]]:=Module[
-	{noSteps},
+	{noSteps,bcData,parameters,method},
 	
 	noSteps=OptionValue["NoTimeSteps"]/.Automatic->10;
 	If[
@@ -351,13 +384,20 @@ HeatTransfer[mesh_ElementMesh,time_,material_,opts:OptionsPattern[]]:=Module[
 		Message[HeatTransfer::quadElms];Return[$Failed]
 	];
 	
-	setup[
-		mesh,material,
-		FilterRules[Join[{opts},Options[HeatTransfer]],Options@setup]
+	bcData=AssociationThread[
+		{"InitialTemperature","AmbientTemperature","ConvectionCoefficient"},
+		{OptionValue["InitialTemperature"],OptionValue["AmbientTemperature"],Clip[OptionValue["ConvectionCoefficient"],{0.,Infinity}]}
 	];
-	analysis[
-		mesh,time,noSteps,
-		FilterRules[Join[{opts},Options[HeatTransfer]],Options@analysis]
+	parameters=Merge[{material,bcData},First];
+	
+	Switch[
+		(method=OptionValue[Method]/.Automatic->"AceFEM"),
+		"AceFEM",
+		analysisAceFEM[mesh,time,parameters,FilterRules[{opts},Options@analysisAceFEM]],
+		"NDSolve",
+		analysisNDSolve[mesh,time,parameters,FilterRules[{opts},Options@analysisNDSolve]],
+		_,Message[HeatTransfer::bdmtd,Style[method,ShowStringCharacters->True]];
+		Return[$Failed,Module]
 	]
 ];
 
