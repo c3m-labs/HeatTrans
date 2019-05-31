@@ -253,8 +253,6 @@ setup[mesh_,material_,opts:OptionsPattern[]]:=Module[
 (*Analysis*)
 
 
-analysisAceFEM//Options={StartingStepSize->Automatic,MaxStepSize->Automatic};
-
 analysisAceFEM[mesh_,time_,parameters_,opts:OptionsPattern[]]:=Module[
 	{t0,\[CapitalDelta]tMin,\[CapitalDelta]tMax,step,reaped},
 	
@@ -264,8 +262,8 @@ analysisAceFEM[mesh_,time_,parameters_,opts:OptionsPattern[]]:=Module[
 	SMTDomainData["Surface","Data","h*"->parameters["ConvectionCoefficient"]];
 	SMTDomainData["Surface","Data","Tamb*"->parameters["AmbientTemperature"]];
 	
-	t0=(OptionValue[StartingStepSize]/.{Automatic->time/1000.});
-	\[CapitalDelta]tMax=(OptionValue[MaxStepSize]/.{Automatic->time/10.});
+	t0=(OptionValue[HeatTransfer,{opts},StartingStepSize]/.{Automatic->time/1000.});
+	\[CapitalDelta]tMax=(OptionValue[HeatTransfer,{opts},MaxStepSize]/.{Automatic->time/10.});
 	\[CapitalDelta]tMin=\[CapitalDelta]tMax/1000.;
 	
 	SMTNextStep["\[CapitalDelta]t"->t0];
@@ -299,8 +297,6 @@ analysisAceFEM[mesh_,time_,parameters_,opts:OptionsPattern[]]:=Module[
 ];
 
 
-analysisNDSolve//Options={StartingStepSize->Automatic,MaxStepSize->Automatic};
-
 analysisNDSolve[mesh_,time_,parameters_,opts:OptionsPattern[]]:=Module[
 	{iniTemp,ambTemp,conCoeff,rho,cp,k,t0,\[CapitalDelta]tMax},
 	(* This is repetitive, but connection with od strings with symbols is clear. *)
@@ -311,8 +307,8 @@ analysisNDSolve[mesh_,time_,parameters_,opts:OptionsPattern[]]:=Module[
 	ambTemp=parameters["AmbientTemperature"];
 	conCoeff=parameters["ConvectionCoefficient"];
 
-	t0=(OptionValue[StartingStepSize]/.{Automatic->time/1000.});
-	\[CapitalDelta]tMax=(OptionValue[MaxStepSize]/.{Automatic->time/10.});
+	t0=(OptionValue[HeatTransfer,{opts},StartingStepSize]/.{Automatic->time/1000.});
+	\[CapitalDelta]tMax=(OptionValue[HeatTransfer,{opts},MaxStepSize]/.{Automatic->time/10.});
 
 	NDSolveValue[{
 		rho*cp*D[u[t,x,y],t]-k*Laplacian[u[t,x,y],{x,y}]==NeumannValue[conCoeff*(ambTemp-u[t,x,y]),True],
@@ -339,9 +335,8 @@ HeatTransfer::bdmtd="Value of option Method->`1` should be \"AceFEM\", \"NDSolve
 
 HeatTransfer//Options={
 	"InitialTemperature"->100.,
-	"AmbientTemperature"->20.,
+	"AmbientTemperature"->0.,
 	"ConvectionCoefficient"->20.,
-	"NoTimeSteps"->Automatic,
 	"MeshOrder"->1,
 	Method->Automatic,
 	StartingStepSize->Automatic,
@@ -369,13 +364,7 @@ HeatTransfer[region_?RegionQ,time_,material_,opts:OptionsPattern[]]:=Module[
 ];
 
 HeatTransfer[mesh_ElementMesh,time_,material_,opts:OptionsPattern[]]:=Module[
-	{noSteps,bcData,parameters,method},
-	
-	noSteps=OptionValue["NoTimeSteps"]/.Automatic->10;
-	If[
-		MatchQ[noSteps,Except[_Integer?Positive]],
-		Message[HeatTransfer::timeSteps,noSteps];Return[$Failed]
-	];
+	{bcData,parameters,method},
 	
 	(* Currently we insist that only quadrilateral elements are used.*)
 	If[

@@ -129,14 +129,6 @@ VerificationTest[
 ];
 
 
-VerificationTest[
-	HeatTransfer[Disk[],1,$DefaultMaterial,"NoTimeSteps"->-2],
-	$Failed,
-	{HeatTransfer::timeSteps},
-	TestID->"HeatTransfer_fail_noTimeSteps"
-];
-
-
 (* ::Subsection:: *)
 (*EndTestSection*)
 
