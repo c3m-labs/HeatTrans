@@ -4,8 +4,7 @@
 $helpMessage=("  Usage: RunTests.wls [options]
 
   Options:
-    -h, --help                   Output usage information
-    -c, --console                Print CDriver messages");
+    -h, --help                   Output usage information");
 
 
 If[
@@ -24,11 +23,6 @@ Get["HeatTrans`"];
 With[
 	{ver="Version"/.PacletInformation["AceFEM"]},
 	Print["  Using Mathematica: ",$VersionNumber," / AceFEM: ",ver]
-];
-
-SetOptions[
-	HeatTransfer,
-	"Console"->MemberQ[Rest@$ScriptCommandLine,"-c"|"--console"]
 ];
 
 Module[
