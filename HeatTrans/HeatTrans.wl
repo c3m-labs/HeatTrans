@@ -265,7 +265,7 @@ setupAceFEM[mesh_,parameters_,opts:OptionsPattern[]]:=Module[
 analysisAceFEM[mesh_,time_,parameters_,opts:OptionsPattern[]]:=Module[
 	{timeSteps,data,t0,\[CapitalDelta]tMin,\[CapitalDelta]tMax,step,reaped},
 	
-	setupAceFEM[mesh,parameters,opts];
+	setupAceFEM[mesh,parameters,FilterRules[{opts},Options@setupAceFEM]];
 	
 	t0=(OptionValue[HeatTransfer,{opts},StartingStepSize]/.{Automatic->time/1000.});
 	\[CapitalDelta]tMax=(OptionValue[HeatTransfer,{opts},MaxStepSize]/.{Automatic->time/10.});
@@ -327,6 +327,7 @@ analysisNDSolve[mesh_,time_,parameters_,opts:OptionsPattern[]]:=Module[
 		u,
 		{t,0,time},
 		{x,y}\[Element]mesh,
+		MaxStepFraction->1.,
 		StartingStepSize->t0,
 		MaxStepSize->\[CapitalDelta]tMax
 	]
@@ -391,9 +392,9 @@ HeatTransfer[mesh_ElementMesh,time_,material_,opts:OptionsPattern[]]:=Module[
 	Switch[
 		(method=OptionValue[Method]/.Automatic->"AceFEM"),
 		"AceFEM",
-		analysisAceFEM[mesh,time,parameters,FilterRules[{opts},Options@analysisAceFEM]],
+		analysisAceFEM[mesh,time,parameters,opts],
 		"NDSolve",
-		analysisNDSolve[mesh,time,parameters,FilterRules[{opts},Options@analysisNDSolve]],
+		analysisNDSolve[mesh,time,parameters,opts],
 		_,Message[HeatTransfer::bdmtd,Style[method,ShowStringCharacters->True]];
 		Return[$Failed,Module]
 	]
