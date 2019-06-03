@@ -83,9 +83,8 @@ With[{
 	]
 	},
 	VerificationTest[
-		HeatTransfer[mesh,1,$DefaultMaterial,Method->"AceFEM"],
-		_InterpolatingFunction,
-		SameTest->MatchQ,
+		HeatTransfer[mesh,1,$DefaultMaterial,Method->"AceFEM"]["Domain"]//First,
+		{0.,1.},
 		TestID->"HeatTransfer_AceFEM"
 	]
 ];
@@ -98,10 +97,45 @@ With[{
 	]
 	},
 	VerificationTest[
-		HeatTransfer[mesh,1,$DefaultMaterial,Method->"NDSolve"],
-		_InterpolatingFunction,
-		SameTest->MatchQ,
+		HeatTransfer[mesh,1,$DefaultMaterial,Method->"NDSolve"]["Domain"]//First,
+		{0.,1.},
 		TestID->"HeatTransfer_NDSolve"
+	]
+];
+
+
+With[{
+	mesh=ToElementMesh[
+		"Coordinates"->{{1.,0.},{1.,1.},{1.5,0.},{1.5,1.},{2.,0.},{2.,1.},{1.,0.5},{1.4,0.4},{2.,0.5}}, 
+		"MeshElements"->{QuadElement[{{1,3,8,7},{7,8,4,2},{3,5,9,8},{8,9,6,4}}]}
+	]
+	},
+	VerificationTest[
+		HeatTransfer[mesh,1,$DefaultMaterial,
+			Method->"AceFEM",
+			MaxStepSize->0.2,
+			StartingStepSize->0.2
+		]["Coordinates"]//First,
+		{0.,0.2,0.4,0.6,0.8,1.},
+		TestID->"HeatTransfer_AceFEM-step-size"
+	]
+];
+
+
+With[{
+	mesh=ToElementMesh[
+		"Coordinates"->{{1.,0.},{1.,1.},{1.5,0.},{1.5,1.},{2.,0.},{2.,1.},{1.,0.5},{1.4,0.4},{2.,0.5}}, 
+		"MeshElements"->{QuadElement[{{1,3,8,7},{7,8,4,2},{3,5,9,8},{8,9,6,4}}]}
+	]
+	},
+	VerificationTest[
+		HeatTransfer[mesh,1,$DefaultMaterial,
+			Method->"NDSolve",
+			MaxStepSize->0.2,
+			StartingStepSize->0.2
+		]["Coordinates"]//First,
+		{0.,0.2,0.4,0.6,0.8,1.},
+		TestID->"HeatTransfer_NDSolve-step-size"
 	]
 ];
 
