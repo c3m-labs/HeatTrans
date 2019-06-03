@@ -206,20 +206,29 @@ $DefaultMaterial::usage="$DefaultMaterial represents a set of default material p
 $DefaultMaterial=<|"Conductivity"->55,"Density"->7800,"SpecificHeat"->470.|>;
 
 
-assembleDomainData[material_Association,other_:{}]:=Join[{
-	"kt0 *"->material["Conductivity"],
-	"rho0 *"->material["Density"],
-	"cp0 *"->material["SpecificHeat"]
+solidDomainData[parameters_Association,other_:{}]:=Join[{
+	"kt0 *"->parameters["Conductivity"],
+	"rho0 *"->parameters["Density"],
+	"cp0 *"->parameters["SpecificHeat"]
 	},
 	other
 ];
 
 
-setup//Options={"SaveResultsTo"->False};
+surfaceDomainData[parameters_Association,other_:{}]:=Join[{
+	"h *"->parameters["ConvectionCoefficient"],
+	"Tamb *"->parameters["AmbientTemperature"]
+	},
+	other
+];
 
-(* We assume that profile mesh is always made of QuadElement (Q1 or Q2S topology) *)
-setup[mesh_,material_,opts:OptionsPattern[]]:=Module[
-	{order,solidElement,surfaceElement,resultsFile},
+
+setupAceFEM//Options={"SaveResultsTo"->False};
+
+(* We assume that profile mesh is always made of QuadElement (Q1 or Q2S topology).
+All parameters are set in this function, analysis function contains just the time stepping loop. *)
+setupAceFEM[mesh_,parameters_,opts:OptionsPattern[]]:=Module[
+	{order,solidElm,surfaceElm,resultsFile},
 	
 	(* Name of results file can be some given string or default name.*)
 	resultsFile=ReplaceAll[
@@ -227,15 +236,15 @@ setup[mesh_,material_,opts:OptionsPattern[]]:=Module[
 		{Automatic|True->"HeatTransfer",x_/;Not@StringQ[x]->False}
 	];
 	order=mesh["MeshOrder"];
-	{solidElement,surfaceElement}=order/.{
+	{solidElm,surfaceElm}=order/.{
 		1-> {"HeatConductionD2Q1","HeatConvectionD2L1"},
 		2-> {"HeatConductionD2Q2S","HeatConvectionD2L2"}
 	};
 	
 	SMTInputData[];
 	SMTAddDomain[{
-		{"Solid",solidElement,assembleDomainData[material],"Source"->getLibrary[solidElement]},
-		{"Surface",surfaceElement,{"h *"->10.,"Tamb *"->25.},"Source"->getLibrary[surfaceElement]}
+		{"Solid",solidElm,solidDomainData[parameters],"Source"->getLibrary[solidElm]},
+		{"Surface",surfaceElm,surfaceDomainData[parameters],"Source"->getLibrary[surfaceElm]}
 	}];
 	SMTAddMesh[mesh,
 		{
@@ -244,7 +253,7 @@ setup[mesh_,material_,opts:OptionsPattern[]]:=Module[
 		},
 		"BoundaryElements"->True
 	];
-	
+	SMTAddInitialBoundary["T",1->parameters["InitialTemperature"],"Type"->"InitialCondition"];
 	SMTAnalysis["DumpInputTo"->resultsFile]
 ];
 
@@ -256,11 +265,7 @@ setup[mesh_,material_,opts:OptionsPattern[]]:=Module[
 analysisAceFEM[mesh_,time_,parameters_,opts:OptionsPattern[]]:=Module[
 	{t0,\[CapitalDelta]tMin,\[CapitalDelta]tMax,step,reaped},
 	
-	setup[mesh,parameters,opts];
-	
-	SMTAddInitialBoundary["T",1->parameters["InitialTemperature"],"Type"->"InitialCondition"];
-	SMTDomainData["Surface","Data","h*"->parameters["ConvectionCoefficient"]];
-	SMTDomainData["Surface","Data","Tamb*"->parameters["AmbientTemperature"]];
+	setupAceFEM[mesh,parameters,opts];
 	
 	t0=(OptionValue[HeatTransfer,{opts},StartingStepSize]/.{Automatic->time/1000.});
 	\[CapitalDelta]tMax=(OptionValue[HeatTransfer,{opts},MaxStepSize]/.{Automatic->time/10.});
