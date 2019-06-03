@@ -263,7 +263,7 @@ setupAceFEM[mesh_,parameters_,opts:OptionsPattern[]]:=Module[
 
 
 analysisAceFEM[mesh_,time_,parameters_,opts:OptionsPattern[]]:=Module[
-	{t0,\[CapitalDelta]tMin,\[CapitalDelta]tMax,step,reaped},
+	{timeSteps,data,t0,\[CapitalDelta]tMin,\[CapitalDelta]tMax,step,reaped},
 	
 	setupAceFEM[mesh,parameters,opts];
 	
@@ -271,8 +271,11 @@ analysisAceFEM[mesh_,time_,parameters_,opts:OptionsPattern[]]:=Module[
 	\[CapitalDelta]tMax=(OptionValue[HeatTransfer,{opts},MaxStepSize]/.{Automatic->time/10.});
 	\[CapitalDelta]tMin=\[CapitalDelta]tMax/1000.;
 	
+	timeSteps={SMTRData["Time"]};
+	data={SMTPostData["Temperature"]};
+	
 	SMTNextStep["\[CapitalDelta]t"->t0];
-	reaped=Last@Reap@While[
+	reaped=Last@Last@Reap@While[
 		While[
 			(step=SMTConvergence[10^-8,10,{"Adaptive Time",7,\[CapitalDelta]tMin,\[CapitalDelta]tMax,time}]),
 			SMTNewtonIteration[]
@@ -292,10 +295,12 @@ analysisAceFEM[mesh_,time_,parameters_,opts:OptionsPattern[]]:=Module[
 		SMTNextStep["\[CapitalDelta]t"->step[[2]]]
 	];
 	
+	timeSteps=Join[timeSteps,reaped[[All,1]]];
+	data=Join[data,reaped[[All,2]]];
 	(* Return InterpolatingFunction of temperature field, like NDSolve would.*)
 	ElementMeshInterpolation[
-		{reaped[[1,All,1]],mesh},
-		Transpose[reaped[[All,All,2]],{2,1,3}],
+		{timeSteps,mesh},
+		Transpose[{data},{2,1,3}],
 		InterpolationOrder->All,
 		"ExtrapolationHandler"->{Function[Indeterminate],"WarningMessage"->False}
 	]
