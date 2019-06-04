@@ -70,12 +70,13 @@ Plot3D[
 
 To access the documentation, open the notebook interface help viewer and search for _HeatTrans_.
 
-## Contributing and bug reports
+## Contributing and feedback
 
 The main purpose of _HeatTrans_ package is to test and demonstrate good software development
 [practices](https://doi.org/10.1371/journal.pbio.1001745) using Mathematica and AceFEM framework.
 Therefore, there is less focus on building more advanced FEM modelling capabilities.
 
-Please use this repository [issues](https://github.com/c3m-labs/HeatTrans/issues) page to submit bugs or feature ideas.
+Please use this repository [issues](https://github.com/c3m-labs/HeatTrans/issues) page to submit bugs or feature ideas. If you find this package useful, feel free to send us feedback to `github` at `c3m.si`.
+
 Contributions to this repository are very welcome.
 Guidelines on how to build `.paclet` file from the source code can be found in [CONTRIBUTING.md]( CONTRIBUTING.md ) file.
