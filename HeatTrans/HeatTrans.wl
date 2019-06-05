@@ -225,32 +225,36 @@ surfaceDomainData[parameters_Association,other_:{}]:=Join[{
 
 setupAceFEM//Options={"SaveResultsTo"->False};
 
-(* We assume that profile mesh is always made of QuadElement (Q1 or Q2S topology).
-All parameters are set in this function, analysis function contains just the time stepping loop. *)
+(* All parameters are set in this function, analysis function contains just the time stepping loop. *)
 setupAceFEM[mesh_,parameters_,opts:OptionsPattern[]]:=Module[
-	{order,solidElm,surfaceElm,resultsFile},
+	{order,type,solidTopology,surfaceTopology,solidElm,surfaceElm,resultsFile},
 	
 	(* Name of results file can be some given string or default name.*)
 	resultsFile=ReplaceAll[
 		OptionValue["SaveResultsTo"],
 		{Automatic|True->"HeatTransfer",x_/;Not@StringQ[x]->False}
 	];
+	
 	order=mesh["MeshOrder"];
-	{solidElm,surfaceElm}=order/.{
-		1-> {"HeatConductionD2Q1","HeatConvectionD2L1"},
-		2-> {"HeatConductionD2Q2S","HeatConvectionD2L2"}
+	type=Head@First@mesh["MeshElements"];
+	solidTopology={type,order}/.{
+		{TriangleElement,1}->"T1",
+		{TriangleElement,2}->"T2",
+		{QuadElement,1}->"Q1",
+		{QuadElement,2}->"Q2S"
 	};
+	solidElm="HeatConductionD2"<>solidTopology;
+	surfaceTopology=order/.{1->"L1",2->"L2"};
+	surfaceElm="HeatConvectionD2"<>surfaceTopology;
 	
 	SMTInputData[];
 	SMTAddDomain[{
 		{"Solid",solidElm,solidDomainData[parameters],"Source"->getLibrary[solidElm]},
 		{"Surface",surfaceElm,surfaceDomainData[parameters],"Source"->getLibrary[surfaceElm]}
 	}];
-	SMTAddMesh[mesh,
-		{
-		(order/.{1->"Q1",2->"Q2S"})->"Solid",
-		(order/.{1->"L1",2->"L2"})->"Surface"
-		},
+	SMTAddMesh[
+		mesh,
+		{solidTopology->"Solid",surfaceTopology->"Surface"},
 		"BoundaryElements"->True
 	];
 	SMTAddInitialBoundary["T",1->parameters["InitialTemperature"],"Type"->"InitialCondition"];
@@ -340,8 +344,7 @@ analysisNDSolve[mesh_,time_,parameters_,opts:OptionsPattern[]]:=Module[
 
 HeatTransfer::usage="HeatTransfer[reg, time, material] simulates heat transfer on 2D Region reg.
 HeatTransfer[mesh, time, material] accepts ElementMesh mesh as description of geometry.";
-HeatTransfer::quadElms="\"MeshElements\" of given ElementMesh should be QuadElement type.";
-HeatTransfer::timeSteps="Number of time steps `1` should be a positive integer.";
+HeatTransfer::eltyp="\"MeshElements\" of given ElementMesh should all either TriangleElement or QuadElement.";
 HeatTransfer::bdmtd="Value of option Method->`1` should be \"AceFEM\", \"NDSolve\" or Automatic.";
 
 HeatTransfer//Options={
@@ -377,10 +380,10 @@ HeatTransfer[region_?RegionQ,time_,material_,opts:OptionsPattern[]]:=Module[
 HeatTransfer[mesh_ElementMesh,time_,material_,opts:OptionsPattern[]]:=Module[
 	{bcData,parameters,method},
 	
-	(* Currently we insist that only quadrilateral elements are used.*)
+	(* Check for non-mixed mesh and correct embedding dimension .*)
 	If[
-		(Head/@mesh["MeshElements"])=!={QuadElement},
-		Message[HeatTransfer::quadElms];Return[$Failed]
+		Not@MatchQ[Head/@mesh["MeshElements"],{TriangleElement}|{QuadElement}],
+		Message[HeatTransfer::eltyp];Return[$Failed,Module]
 	];
 	
 	bcData=AssociationThread[
