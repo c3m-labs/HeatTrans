@@ -30,6 +30,16 @@ Cell[BoxData[
 
 Cell[BoxData[
  RowBox[{"makeHeatConductionElement", "[", 
+  RowBox[{"\"\<D2\>\"", ",", "\"\<T1\>\""}], 
+  "]"}]], "Input",ExpressionUUID->"63c0e182-902a-409a-aa15-1b80b515a3ac"],
+
+Cell[BoxData[
+ RowBox[{"makeHeatConductionElement", "[", 
+  RowBox[{"\"\<D2\>\"", ",", "\"\<T2\>\""}], 
+  "]"}]], "Input",ExpressionUUID->"96930284-748b-489d-9f8d-6b71b05354af"],
+
+Cell[BoxData[
+ RowBox[{"makeHeatConductionElement", "[", 
   RowBox[{"\"\<D2\>\"", ",", "\"\<Q1\>\""}], "]"}]], "Input",
  CellLabel->"In[3]:=",ExpressionUUID->"786abcb5-053d-4556-a946-b58c8b7e807f"],
 
@@ -213,7 +223,7 @@ Cell[BoxData[
 WindowSize->{958, 1086},
 WindowMargins->{{Automatic, -8}, {Automatic, 0}},
 PrivateNotebookOptions->{"FileOutlineCache"->False},
-FrontEndVersion->"11.3 for Microsoft Windows (64-bit) (March 6, 2018)",
+FrontEndVersion->"12.0 for Microsoft Windows (64-bit) (April 8, 2019)",
 StyleDefinitions->"Default.nb"
 ]
 
