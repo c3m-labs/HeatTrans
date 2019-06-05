@@ -82,17 +82,69 @@ VerificationTest[
 (*HeatTransfer*)
 
 
-VerificationTest[
-	HeatTransfer[$miniTestMesh,1,$DefaultMaterial,Method->"AceFEM"]["Domain"]//First,
-	{0.,1.},
-	TestID->"HeatTransfer_AceFEM"
+With[{
+	mesh=ToElementMesh[Rectangle[],"MeshOrder"->1,"MeshElementType"->QuadElement,MaxCellMeasure->{1->1/2}]
+	},
+	VerificationTest[
+		HeatTransfer[mesh,1000,$DefaultMaterial,Method->"AceFEM"]["Domain"]//First,
+		{0.,1000.},
+		TestID->"HeatTransfer_AceFEM-Q1"
+	]
 ];
 
 
-VerificationTest[
-	HeatTransfer[$miniTestMesh,1,$DefaultMaterial,Method->"NDSolve"]["Domain"]//First,
-	{0.,1.},
-	TestID->"HeatTransfer_NDSolve"
+With[{
+	mesh=ToElementMesh[Rectangle[],"MeshOrder"->2,"MeshElementType"->QuadElement,MaxCellMeasure->{1->1/2}]
+	},
+	VerificationTest[
+		HeatTransfer[mesh,1000,$DefaultMaterial,Method->"AceFEM"]["Domain"]//First,
+		{0.,1000.},
+		TestID->"HeatTransfer_AceFEM-Q2S"
+	]
+];
+
+
+With[{
+	mesh=ToElementMesh[Rectangle[],"MeshOrder"->1,"MeshElementType"->TriangleElement,MaxCellMeasure->{1->1/2}]
+	},
+	VerificationTest[
+		HeatTransfer[mesh,1000,$DefaultMaterial,Method->"AceFEM"]["Domain"]//First,
+		{0.,1000.},
+		TestID->"HeatTransfer_AceFEM-T1"
+	]
+];
+
+
+With[{
+	mesh=ToElementMesh[Rectangle[],"MeshOrder"->2,"MeshElementType"->TriangleElement,MaxCellMeasure->{1->1/2}]
+	},
+	VerificationTest[
+		HeatTransfer[mesh,1000,$DefaultMaterial,Method->"AceFEM"]["Domain"]//First,
+		{0.,1000.},
+		TestID->"HeatTransfer_AceFEM-T2"
+	]
+];
+
+
+With[{
+	mesh=ToElementMesh[Rectangle[],"MeshOrder"->1,"MeshElementType"->QuadElement,MaxCellMeasure->{1->1/2}]
+	},
+	VerificationTest[
+		HeatTransfer[mesh,1000,$DefaultMaterial,Method->"NDSolve"]["Domain"]//First,
+		{0.,1000.},
+		TestID->"HeatTransfer_NDSolve-quad"
+	]
+];
+
+
+With[{
+	mesh=ToElementMesh[Rectangle[],"MeshOrder"->1,"MeshElementType"->TriangleElement,MaxCellMeasure->{1->1/2}]
+	},
+	VerificationTest[
+		HeatTransfer[mesh,1000,$DefaultMaterial,Method->"NDSolve"]["Domain"]//First,
+		{0.,1000.},
+		TestID->"HeatTransfer_NDSolve-triangle"
+	]
 ];
 
 
@@ -118,19 +170,23 @@ VerificationTest[
 ];
 
 
+With[{
+	mesh=ToElementMesh[Cuboid[],"MeshOrder"->1]
+	},
+	VerificationTest[
+		HeatTransfer[mesh,1000,$DefaultMaterial],
+		$Failed,
+		{HeatTransfer::eltyp},
+		TestID->"HeatTransfer_wrong-embedding-dim"
+	]
+];
+
+
 VerificationTest[
 	HeatTransfer[$miniTestMesh,1,$DefaultMaterial,Method->"BadValue"],
 	$Failed,
 	{HeatTransfer::bdmtd},
 	TestID->"HeatTransfer_wrong-Method"
-];
-
-
-VerificationTest[
-	HeatTransfer[ToElementMesh@Disk[],1,$DefaultMaterial],
-	$Failed,
-	{HeatTransfer::quadElms},
-	TestID->"HeatTransfer_fail_triangleElements"
 ];
 
 
