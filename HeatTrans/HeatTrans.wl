@@ -223,7 +223,7 @@ surfaceDomainData[parameters_Association,other_:{}]:=Join[{
 ];
 
 
-setupAceFEM//Options={"SaveResultsTo"->False};
+setupAceFEM//Options={"SaveResults"->False};
 
 (* All parameters are set in this function, analysis function contains just the time stepping loop. *)
 setupAceFEM[mesh_,parameters_,opts:OptionsPattern[]]:=Module[
@@ -231,7 +231,7 @@ setupAceFEM[mesh_,parameters_,opts:OptionsPattern[]]:=Module[
 	
 	(* Name of results file can be some given string or default name.*)
 	resultsFile=ReplaceAll[
-		OptionValue["SaveResultsTo"],
+		OptionValue["SaveResults"],
 		{Automatic|True->"HeatTransfer",x_/;Not@StringQ[x]->False}
 	];
 	
@@ -267,9 +267,12 @@ setupAceFEM[mesh_,parameters_,opts:OptionsPattern[]]:=Module[
 
 
 analysisAceFEM[mesh_,time_,parameters_,opts:OptionsPattern[]]:=Module[
-	{timeSteps,data,t0,\[CapitalDelta]tMin,\[CapitalDelta]tMax,step,reaped},
+	{method,subOpts,timeSteps,data,t0,\[CapitalDelta]tMin,\[CapitalDelta]tMax,step,reaped},
 	
-	setupAceFEM[mesh,parameters,FilterRules[{opts},Options@setupAceFEM]];
+	method=OptionValue[HeatTransfer,{opts},Method];
+	subOpts=If[ListQ@method,Rest@method,{}];
+	
+	setupAceFEM[mesh,parameters,FilterRules[Join[subOpts,{opts}],Options@setupAceFEM]];
 	
 	t0=(OptionValue[HeatTransfer,{opts},StartingStepSize]/.{Automatic->time/1000.});
 	\[CapitalDelta]tMax=(OptionValue[HeatTransfer,{opts},MaxStepSize]/.{Automatic->time/10.});
@@ -378,7 +381,7 @@ HeatTransfer[region_?RegionQ,time_,material_,opts:OptionsPattern[]]:=Module[
 ];
 
 HeatTransfer[mesh_ElementMesh,time_,material_,opts:OptionsPattern[]]:=Module[
-	{bcData,parameters,method},
+	{bcData,parameters,method,subOpts},
 	
 	(* Check for non-mixed mesh and correct embedding dimension .*)
 	If[
@@ -392,14 +395,15 @@ HeatTransfer[mesh_ElementMesh,time_,material_,opts:OptionsPattern[]]:=Module[
 	];
 	parameters=Merge[{material,bcData},First];
 	
-	Switch[
-		(method=OptionValue[Method]/.Automatic->"AceFEM"),
+	(* Method should converted to one string, even if given with suboptions. *)
+	method=OptionValue[Method]/.{{m_,___}:>m}/.{Automatic->"AceFEM"};
+	Switch[method,
 		"AceFEM",
 		analysisAceFEM[mesh,time,parameters,opts],
 		"NDSolve",
 		analysisNDSolve[mesh,time,parameters,opts],
-		_,Message[HeatTransfer::bdmtd,Style[method,ShowStringCharacters->True]];
-		Return[$Failed,Module]
+		_,
+		Message[HeatTransfer::bdmtd,Style[method,ShowStringCharacters->True]];Return[$Failed,Module]
 	]
 ];
 
