@@ -125,7 +125,7 @@ getLibrary[name_]:=Module[
 It is copied from FEMAddOns package ( https://github.com/WolframResearch/FEMAddOns ) *)
 
 laplacianElementMeshSmoothing[mesh_]:=Module[
-	{n, vec, mat, adjacencyMatrix, mass, laplacian, typoOpt,
+	{n, vec, mat, adjacencyMatrix, mass, laplacian,
 	bndVertices, interiorVertices, stiffness, load, newCoords},
 
 	n = Length[mesh["Coordinates"]];
@@ -148,18 +148,11 @@ laplacianElementMeshSmoothing[mesh_]:=Module[
 
 	newCoords = LinearSolve[stiffness, load];
 
-	typoOpt = If[
-			$VersionNumber <= 11.3,
-			"CheckIncidentsCompletness" -> False,
-			"CheckIncidentsCompleteness" -> False
-		];
-
 	ToElementMesh[
 		"Coordinates" -> newCoords, 
 		"MeshElements" -> mesh["MeshElements"], 
 		"BoundaryElements" -> mesh["BoundaryElements"], 
 		"PointElements" -> mesh["PointElements"], 
-		typoOpt,
 		"CheckIntersections" -> False, 
 		"DeleteDuplicateCoordinates" -> False,
 		"RegionHoles" -> mesh["RegionHoles"]
@@ -173,15 +166,15 @@ MakeMesh::badreg="Region should be a bounded region in 2D.";
 MakeMesh//SyntaxInformation={"ArgumentsPattern"->{_,_}};
 
 MakeMesh[region_,order:(1|2)]:=Module[
-	{triMesh,maxBound},
+	{mesh,maxBound},
 	
 	If[
 		Not[BoundedRegionQ[region]&&RegionDimension[region]==2],
-		Message[MakeMesh::badreg];Return[$Failed]
+		Message[MakeMesh::badreg];Return[$Failed,Module]
 	];
 	
 	maxBound=Max[Differences/@RegionBounds[region]];
-	triMesh=ToElementMesh[
+	mesh=ToElementMesh[
 		region,
 		"MeshOrder"->1,
 		"MeshElementType"->TriangleElement,
@@ -190,7 +183,7 @@ MakeMesh[region_,order:(1|2)]:=Module[
 	];
 	
 	MeshOrderAlteration[
-		laplacianElementMeshSmoothing@SMTTriangularToQuad[triMesh],
+		laplacianElementMeshSmoothing[mesh],
 		order
 	]
 ];
@@ -369,7 +362,7 @@ HeatTransfer[region_?RegionQ,time_,material_,opts:OptionsPattern[]]:=Module[
 	
 	If[
 		Not[BoundedRegionQ[region]&&RegionDimension[region]==2],
-		Message[HeatTransfer::badreg];Return[$Failed]
+		Message[HeatTransfer::badreg];Return[$Failed,Module]
 	];
 	
 	mesh=MakeMesh[region,order];

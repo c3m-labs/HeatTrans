@@ -33,8 +33,8 @@ VerificationTest[
 		},
 		(* Test should return True *)
 		And[
-			Head@First@mesh["MeshElements"]==QuadElement,
-			mesh["MeshOrder"]==1
+			Head@First@mesh["MeshElements"]===TriangleElement,
+			mesh["MeshOrder"]===1
 		]
 	],
 	TestID->"MakeMesh_success_order=1"
@@ -47,8 +47,8 @@ VerificationTest[
 		},
 		(* Test should return True *)
 		And[
-			Head@First@mesh["MeshElements"]==QuadElement,
-			mesh["MeshOrder"]==2
+			Head@First@mesh["MeshElements"]===TriangleElement,
+			mesh["MeshOrder"]===2
 		]
 	],
 	TestID->"MakeMesh_success_order=2"
