@@ -94,23 +94,19 @@ Module[
 
 
 Module[
-	{original,modified,noCommits,revision,publicQ,version},
+	{original,modified,noCommits,revision,publicQ},
 
 	original=List@@Import[FileNameJoin[{$source,"PacletInfo.m"}]];
 	noCommits=getGitCommitCount[$rootDir];
 	revision=getGitRevision[$rootDir];
 	publicQ=MemberQ[Rest@$ScriptCommandLine,"-r"|"--release"];
-	version=Version/.original;
-	(* Internal releases have number of commits appended. Public releases conform to 
-	"semantic versioning" convention with 3 version numbers. *)
-	If[Not@publicQ,version=version<>"."<>ToString@noCommits];
 		
 	(* Description of git repository (git describe ...) returns a string that cannot 
 	be used as BuildNumber because only integers are accepted. 
 	Otherwise PackPaclet returns $Failed and procedure fails. Instead commit count is used. *)
 	modified=Paclet@@Normal[Merge[{
 		Association@@original,
-		<|Version->version,Internal->Not@publicQ,BuildNumber->noCommits,"Hash"->revision|>
+		<|Internal->Not@publicQ,BuildNumber->noCommits,"Hash"->revision|>
 		},
 		Last
 	]];
