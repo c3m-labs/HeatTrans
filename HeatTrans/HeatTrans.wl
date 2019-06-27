@@ -125,7 +125,7 @@ getLibrary[name_]:=Module[
 It is copied from FEMAddOns package ( https://github.com/WolframResearch/FEMAddOns ) *)
 
 laplacianElementMeshSmoothing[mesh_]:=Module[
-	{n, vec, mat, adjacencyMatrix, mass, laplacian,
+	{n, vec, mat, adjacencyMatrix, mass, 
 	bndVertices, interiorVertices, stiffness, load, newCoords},
 
 	n = Length[mesh["Coordinates"]];
@@ -374,7 +374,7 @@ HeatTransfer[region_?RegionQ,time_,material_,opts:OptionsPattern[]]:=Module[
 ];
 
 HeatTransfer[mesh_ElementMesh,time_,material_,opts:OptionsPattern[]]:=Module[
-	{bcData,parameters,method,subOpts},
+	{bcData,parameters,method},
 	
 	(* Check for non-mixed mesh and correct embedding dimension .*)
 	If[
