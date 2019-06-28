@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.0] - 2019-06-28
+
+### Added
+
+- New option to choose Mathematica FEM solver with `Method->"NDSolve"`.
+
+### Changed
+
+- Analysis time step is now adaptive (options `StartingStepSize` and `MaxStepSize`) instead of constant.
+- Default FEM mesh topology is triangular.
+- All FEM mesh topologies supported by `ElementMesh` are accepted.
+
+### Removed
+
+- Option `"NoTimeSteps"` is removed because time step length is now adaptive.
+
 ## [1.0.0] - 2019-03-07
 
 ### Changed
@@ -39,7 +55,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial functionality
 
-[Unreleased]: https://github.com/c3m-labs/HeatTrans/compare/v0.3.1...HEAD
+[Unreleased]: https://github.com/c3m-labs/HeatTrans/compare/v2.0.0...HEAD
+[2.0.0]: https://github.com/c3m-labs/HeatTrans/compare/v1.0.0...v2.0.0
 [1.0.0]: https://github.com/c3m-labs/HeatTrans/compare/v0.3.1...v1.0.0
 [0.3.1]: https://github.com/c3m-labs/HeatTrans/compare/v0.3.0...v0.3.1
 [0.3.0]: https://github.com/c3m-labs/HeatTrans/compare/v0.2.0...v0.3.0
