@@ -3,8 +3,8 @@
 [![releases](https://img.shields.io/github/release/c3m-labs/HeatTrans.svg)](https://github.com/c3m-labs/HeatTrans/releases)
 [![SemVer 2.0.0](https://img.shields.io/badge/SemVer-2.0.0-brightgreen.svg)](http://semver.org/spec/v2.0.0.html)
 
-[Mathematica](http://www.wolfram.com/mathematica/) package for non-stationary heat transfer simulation
-with [AceFEM](http://symech.fgg.uni-lj.si/) framework.
+HeatTrans is a [Mathematica](http://www.wolfram.com/mathematica/) package for non-stationary heat transfer simulation in 2D.
+It is using [AceFEM](http://symech.fgg.uni-lj.si/) framework for finite element method capabilities.
 
 ![logo](Images/Logo.png)
 
@@ -76,7 +76,11 @@ The main purpose of _HeatTrans_ package is to test and demonstrate good software
 [practices](https://doi.org/10.1371/journal.pbio.1001745) using Mathematica and AceFEM framework.
 Therefore, there is less focus on building more advanced FEM modelling capabilities.
 
-Please use this repository [issues](https://github.com/c3m-labs/HeatTrans/issues) page to submit bugs or feature ideas. If you find this package useful, feel free to send us feedback to `github` at `c3m.si`.
+Please use this repository [issues](https://github.com/c3m-labs/HeatTrans/issues) page to submit bugs or feature ideas. If you find this package useful, feel free to send us feedback by email to `github` at `c3m.si`.
 
-Contributions to this repository are very welcome.
+Pull requests to this repository are welcome.
 Guidelines on how to build `.paclet` file from the source code can be found in [CONTRIBUTING.md]( CONTRIBUTING.md ) file.
+
+## License
+
+[MIT](https://choosealicense.com/licenses/mit/)
