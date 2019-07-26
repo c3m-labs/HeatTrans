@@ -1,33 +1,44 @@
 (* ::Package:: *)
 
-(* ::Subsection:: *)
-(*Begin package*)
-
-
-(* We will keep element subroutine generating functions in a Global` context to avoid
-complications with symbol shadowing. 
-One reason for this might be non-conventional AceGen context structure. *)
-
-(*BeginPackage["HeatTrans`Element`Convection`",{"AceFEM`","AceCommon`","AceGen`","AceEnvironment`"}];*)
-
-
-makeHeatConvectionElement::usage="makeHeatConvectionElement[model, topology] generates heat convection element for AceFEM.";
+(* ::Section:: *)
+(*Heat conduction element*)
 
 
 (* ::Subsection:: *)
-(*Element code*)
+(*Initialization*)
 
 
-(*Begin["`Private`"];*)
+Needs["AceGen`"];
 
 
-(* ::Subsubsection:: *)
-(*Phases and modules*)
+If[
+	Not@MatchQ[$topology,"L1"|"L2"],
+	$topology="T1"
+];
+
+SMSInitialize[
+	"HeatConvectionD2"<>$topology,
+	"Environment"->"AceFEM",
+	"Mode"->"Optimal"
+];
 
 
-inputOutput//ClearAll;
+SMSTemplate[
+	"SMSTopology"->$topology,
+	"SMSSymmetricTangent"->True,
+	"SMSNodeID"->"T",
+	"SMSDOFGlobal"->1,
+	"SMSDomainDataNames"->{"h - convective coefficient","Tamb - ambient temperature"},
+	"SMSDefaultData"->{10., 25.} 
+	(* Assumming kg/m/s unit system.*)
+];
 
-inputOutput[]:=(
+
+(* ::Subsection:: *)
+(*Element definitions*)
+
+
+ElementDefinitions[]:=Module[{},
 	XYZ\[RightTee]SMSReal[Table[nd$$[i,"X",j],{i,SMSNoNodes},{j,SMSNoDimensions}]];
 	{Xi,Yi}\[DoubleRightTee]Transpose[XYZ];
 	
@@ -36,15 +47,11 @@ inputOutput[]:=(
 	{t,\[CapitalDelta]t}\[RightTee]SMSReal[{rdata$$["Time"],rdata$$["TimeIncrement"]}];
 	
 	{h\[DoubleStruckG],Tamb\[DoubleStruckG]}\[RightTee]SMSReal[Table[es$$["Data",i],{i,Length[SMSDomainDataNames]}]];
-);
-
-
-discretization//ClearAll;
-
-discretization[model_String,topology_String]:=(
+	
 	{\[Xi],\[Eta],\[Zeta],wGauss}\[RightTee]Array[SMSReal[es$$["IntPoints",#1,IpIndex]]&,4];
+	
 	Ni\[DoubleRightTee]Switch[
-		topology,
+		$topology,
 		"L1",
 		{(1-\[Xi])/2, (1+\[Xi])/2},
 		"L2",
@@ -58,65 +65,29 @@ discretization[model_String,topology_String]:=(
 	r\[Xi]\[DoubleRightTee]SMSD[{X,Y},\[Xi]];
 	\[Xi]\[Eta]\[Zeta]ToXYZ={};
 
-	fGauss\[DoubleRightTee]Switch[model,
-		"D2",
-		wGauss*SMSSqrt[r\[Xi].r\[Xi]],
-		"AX",
-		wGauss*2Pi*Y*SMSSqrt[r\[Xi].r\[Xi]]
-	];
-);
-
-
-constitutiveEquations//ClearAll;
-
-constitutiveEquations[task_String]:=(
+	fGauss\[DoubleRightTee]wGauss*SMSSqrt[r\[Xi].r\[Xi]];
 	
 	Ti\[DoubleRightTee]Flatten[dof];
 	T\[DoubleRightTee]Ni.Ti;
-	
-	If[task==="Post",
-		NPlotQuantities={{"Temperature",Ti}};
-		GPlotQuantities={};
-		Return[]
-	];
-	
+
 	h\[CapitalDelta]T\[DoubleRightTee]SMSFreeze[h\[DoubleStruckG]*(T-Tamb\[DoubleStruckG])];
 	constant={h\[CapitalDelta]T};
 	
 	\[CapitalPi]\[DoubleRightTee]h\[CapitalDelta]T*T ;
-);
+];
 
 
-(* ::Subsubsection:: *)
-(*Main function*)
+(* ::Subsection:: *)
+(*Tangent and Residual*)
 
 
-makeHeatConvectionElement[model_String,topology_String]:=Block[
-	{i,j},
-	(* TODO: Add checks which model types and topologies are accepted. *)
-	SMSInitialize[
-		"HeatConvection"<>model<>topology,
-		"Environment"->"AceFEM",
-		"Mode"->"Optimal"
-	];
-	SMSTemplate[
-		"SMSTopology"->topology,
-		"SMSSymmetricTangent"->True,
-		"SMSNodeID"->"T",
-		"SMSDOFGlobal"->1,
-		"SMSDomainDataNames"->{"h - convective coefficient","Tamb - ambient temperature"},
-		"SMSDefaultData"->{10., 25.}
-	];
-	(* ============================================================= *)
-	SMSStandardModule["Tangent and residual"];
+SMSStandardModule["Tangent and residual"];
 	
 	NoIp\[RightTee]SMSInteger[es$$["id","NoIntPoints"]];
 	
 	SMSDo[IpIndex,1,NoIp];
 		
-		inputOutput[];
-		discretization[model,topology];
-		constitutiveEquations["\[CapitalPi]"];
+		ElementDefinitions[];
 		
 		SMSDo[i,1,Length[Ti]];
 			Rg\[DoubleRightTee]fGauss*SMSD[\[CapitalPi], Ti, i, "Constant"->constant];
@@ -127,9 +98,13 @@ makeHeatConvectionElement[model_String,topology_String]:=Block[
 			SMSEndDo[];
 		SMSEndDo[];
 	SMSEndDo[];
-	
-	(* ============================================================= *)
-	SMSStandardModule["Postprocessing"];
+
+
+(* ::Subsection:: *)
+(*Post-processing*)
+
+
+SMSStandardModule["Postprocessing"];
 	
 	NoIp\[RightTee]SMSInteger[es$$["id","NoIntPoints"]];
 	
@@ -138,9 +113,7 @@ makeHeatConvectionElement[model_String,topology_String]:=Block[
 	
 	SMSDo[IpIndex,1,NoIp];
 		
-		inputOutput[];
-		discretization[model,topology];
-		constitutiveEquations["Post"];
+		ElementDefinitions[];
 		
 		If[
 			GPlotQuantities=!={},
@@ -149,24 +122,20 @@ makeHeatConvectionElement[model_String,topology_String]:=Block[
 		];
 	SMSEndDo[];
 	
+	NPlotQuantities={{"Temperature",Ti}};
+	
 	If[
 		NPlotQuantities=!={},
 		SMSNPostNames=NPlotQuantities[[All,1]];
 		SMSExport[NPlotQuantities[[All,2]],npost$$[#2,#1]&];
 	];
-	
-	SMSMainTitle="Heat convection element.";
-	SMSSubTitle=model/.{"AX"->"Axisymmetric model","D2"->"2D continuum model"};
-	
-	SMSWrite[];
-];
 
 
 (* ::Subsection:: *)
-(*End package*)
+(*Code generation*)
 
 
-(*End[];*)
+SMSMainTitle="Heat convection element.";
 
 
-(*EndPackage[];*)
+SMSWrite[];
