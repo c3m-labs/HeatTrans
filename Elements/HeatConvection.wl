@@ -104,14 +104,8 @@ SMSEndDo[];(* end integration point loop *)
 
 
 SMSStandardModule["Postprocessing"];
-
-(* nodal post-processing *)
-{temperature}\[DoubleRightTee]Transpose[SMSIO["All DOFs"]];
-SMSIO[
-	{"Temperature"->temperature},
-	"Export to",
-	"Nodal point"
-];
+(* Nodal post-processing is redundant.
+Visualisation of line elements would only interfere with visualisation of 2D elements.  *)
 
 
 (* ::Subsection:: *)
