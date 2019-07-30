@@ -27,10 +27,7 @@ SMSTemplate[
 	"SMSTopology"->$topology,
 	"SMSSymmetricTangent"->True,
 	"SMSNodeID"->"T",
-	"SMSDOFGlobal"->1,
-	"SMSDomainDataNames"->{"h - convective coefficient","Tamb - ambient temperature"},
-	"SMSDefaultData"->{10., 25.} 
-	(* Assumming kg/m/s unit system.*)
+	"SMSDOFGlobal"->1
 ];
 
 
@@ -38,19 +35,13 @@ SMSTemplate[
 (*Element definitions*)
 
 
-ElementDefinitions[]:=Module[{},
-	XYZ\[RightTee]SMSReal[Table[nd$$[i,"X",j],{i,SMSNoNodes},{j,SMSNoDimensions}]];
-	{Xi,Yi}\[DoubleRightTee]Transpose[XYZ];
+ElementDefinitions[]:=Module[
+	{},
+
+	wgp\[DoubleRightTee]SMSIO["Integration weight",Ig];
+	\[CapitalXi]={\[Xi],\[Eta],\[Zeta]}\[DoubleRightTee]SMSIO["Integration point",Ig];
 	
-	dof\[RightTee]SMSReal[Table[nd$$[i,"at",j],{i,SMSNoNodes},{j,SMSDOFGlobal[[i]]}]];
-	
-	{t,\[CapitalDelta]t}\[RightTee]SMSReal[{rdata$$["Time"],rdata$$["TimeIncrement"]}];
-	
-	{h\[DoubleStruckG],Tamb\[DoubleStruckG]}\[RightTee]SMSReal[Table[es$$["Data",i],{i,Length[SMSDomainDataNames]}]];
-	
-	{\[Xi],\[Eta],\[Zeta],wGauss}\[RightTee]Array[SMSReal[es$$["IntPoints",#1,IpIndex]]&,4];
-	
-	Ni\[DoubleRightTee]Switch[
+	\[DoubleStruckCapitalN]h\[DoubleRightTee]Switch[
 		$topology,
 		"L1",
 		{(1-\[Xi])/2, (1+\[Xi])/2},
@@ -58,22 +49,32 @@ ElementDefinitions[]:=Module[{},
 		{\[Xi] (\[Xi]-1)/2, \[Xi] (1+\[Xi])/2, (1+\[Xi])(1-\[Xi])}
 	];
 	
-	X\[RightTee]SMSFreeze[Ni.Xi];
-	Y\[RightTee]SMSFreeze[Ni.Yi];
-	Z\[RightTee]SMSFreeze[\[Zeta]];
+	(* Nodal DOF - current *)
+	\[DoubleStruckP]eIO\[DoubleRightTee]SMSIO["All DOFs"];
+	\[DoubleStruckP]e=Flatten[\[DoubleStruckP]eIO];
 	
-	r\[Xi]\[DoubleRightTee]SMSD[{X,Y},\[Xi]];
-	\[Xi]\[Eta]\[Zeta]ToXYZ={};
-
-	fGauss\[DoubleRightTee]wGauss*SMSSqrt[r\[Xi].r\[Xi]];
+	(* temperature field *)
+	TIO=\[DoubleStruckP]eIO[[All,1]]; 
+	T\[DoubleRightTee]\[DoubleStruckCapitalN]h.TIO;
 	
-	Ti\[DoubleRightTee]Flatten[dof];
-	T\[DoubleRightTee]Ni.Ti;
-
+	(* Discretization of coordinates *)
+	SMSFreeze[\[DoubleStruckCapitalX],Append[\[DoubleStruckCapitalN]h.Take[SMSIO["All coordinates"],Length[\[DoubleStruckCapitalN]h]],\[Zeta]]];
+	{X,Y,Z}=\[DoubleStruckCapitalX];
+	\[DoubleStruckR]\[Xi]\[DoubleRightTee]SMSD[{X,Y},\[Xi]];
+	r\[Xi]n\[DoubleRightTee]SMSSqrt[\[DoubleStruckR]\[Xi].\[DoubleStruckR]\[Xi]];
+	fGauss\[DoubleRightTee]wgp*r\[Xi]n;
+	
+	(* Assumming kg/m/s unit system.*)
+	{h\[DoubleStruckG],Tamb\[DoubleStruckG]}\[DoubleRightTee]SMSIO["Domain data",{
+		"h"->{"h - convection coefficient",10.},
+		"Tamb"->{"Tamb - ambient temperature",20.}
+	}];
+	(* variables that have to be considered constant for the evaluation of residual *)
+	constant={};
 	h\[CapitalDelta]T\[DoubleRightTee]SMSFreeze[h\[DoubleStruckG]*(T-Tamb\[DoubleStruckG])];
-	constant={h\[CapitalDelta]T};
+	AppendTo[constant,h\[CapitalDelta]T];
 	
-	\[CapitalPi]\[DoubleRightTee]h\[CapitalDelta]T*T ;
+	W\[DoubleRightTee]h\[CapitalDelta]T*T ;
 ];
 
 
@@ -83,21 +84,19 @@ ElementDefinitions[]:=Module[{},
 
 SMSStandardModule["Tangent and residual"];
 	
-	NoIp\[RightTee]SMSInteger[es$$["id","NoIntPoints"]];
+SMSDo[Ig,1,SMSIO["No. integration points"]];
 	
-	SMSDo[IpIndex,1,NoIp];
-		
-		ElementDefinitions[];
-		
-		SMSDo[i,1,Length[Ti]];
-			Rg\[DoubleRightTee]fGauss*SMSD[\[CapitalPi], Ti, i, "Constant"->constant];
-			SMSExport[SMSResidualSign*Rg,p$$[i],"AddIn"->True];
-			SMSDo[j,If[SMSSymmetricTangent,i,1],Length[Ti]];		
-				Kt=SMSD[Rg, Ti, j];
-				SMSExport[Kt,s$$[i,j],"AddIn"->True];
-			SMSEndDo[];
+	ElementDefinitions[];
+
+	SMSDo[i,1,SMSNoDOFGlobal];
+		Rg\[DoubleRightTee]fGauss*SMSD[W, \[DoubleStruckP]e, i, "Constant"->SMSVariables[constant]];
+		SMSExport[SMSResidualSign*Rg,p$$[i],"AddIn"->True];
+		SMSDo[j,If[SMSSymmetricTangent,i,1],SMSNoDOFGlobal];		
+			Kt=SMSD[Rg, \[DoubleStruckP]e, j];
+			SMSExport[Kt,s$$[i,j],"AddIn"->True];
 		SMSEndDo[];
 	SMSEndDo[];
+SMSEndDo[];(* end integration point loop *)
 
 
 (* ::Subsection:: *)
@@ -105,30 +104,14 @@ SMSStandardModule["Tangent and residual"];
 
 
 SMSStandardModule["Postprocessing"];
-	
-	NoIp\[RightTee]SMSInteger[es$$["id","NoIntPoints"]];
-	
-	GPlotQuantities={};
-	NPlotQuantities={};
-	
-	SMSDo[IpIndex,1,NoIp];
-		
-		ElementDefinitions[];
-		
-		If[
-			GPlotQuantities=!={},
-			SMSGPostNames=GPlotQuantities[[All,1]];
-			SMSExport[GPlotQuantities[[All,2]],gpost$$[IpIndex,#1]&];
-		];
-	SMSEndDo[];
-	
-	NPlotQuantities={{"Temperature",Ti}};
-	
-	If[
-		NPlotQuantities=!={},
-		SMSNPostNames=NPlotQuantities[[All,1]];
-		SMSExport[NPlotQuantities[[All,2]],npost$$[#2,#1]&];
-	];
+
+(* nodal post-processing *)
+{temperature}\[DoubleRightTee]Transpose[SMSIO["All DOFs"]];
+SMSIO[
+	{"Temperature"->temperature},
+	"Export to",
+	"Nodal point"
+];
 
 
 (* ::Subsection:: *)

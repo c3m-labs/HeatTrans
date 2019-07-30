@@ -27,19 +27,7 @@ SMSTemplate[
 	"SMSTopology"->$topology,
 	"SMSSymmetricTangent"->True,
 	"SMSNodeID"->"T",
-	"SMSDOFGlobal"->1,
-	"SMSDomainDataNames"->{
-		"kt0 - conductivity (constant term)","kt1 - conductivity (linear term)","kt2 - conductivity (quadratic term)",
-		"rho0 - density (constant term)","rho1 - density (linear term)","rho2 - density (quadratic term)",
-		"cp0 - specific heat (constant term)","cp1 - specific heat (linear term)","cp2 - specific heat (quadratic term)",
-		"Q - heat source"
-	},
-	"SMSDefaultData"->{
-		220., 0., 0.,
-		2700., 0., 0.,
-		900., 0., 0.,
-		0.
-	} (* Assumming kg/m/s unit system.*)
+	"SMSDOFGlobal"->1
 ];
 
 
@@ -48,19 +36,11 @@ SMSTemplate[
 
 
 ElementDefinitions[]:=Module[{},
-	XYZ\[RightTee]SMSReal[Table[nd$$[i,"X",j],{i,SMSNoNodes},{j,SMSNoDimensions}]];
-	{Xi,Yi}\[DoubleRightTee]Transpose[XYZ];
-	
-	dof\[RightTee]SMSReal[Table[nd$$[i,"at",j],{i,SMSNoNodes},{j,SMSDOFGlobal[[i]]}]];
-	dofp\[RightTee]SMSReal[Table[nd$$[i,"ap",j],{i,SMSNoNodes},{j,SMSDOFGlobal[[i]]}]];
-	
-	{t,\[CapitalDelta]t}\[RightTee]SMSReal[{rdata$$["Time"],rdata$$["TimeIncrement"]}];
-	
-	{kt0,kt1,kt2,rho0,rho1,rho2,cp0,cp1,cp2,Q}\[RightTee]SMSReal[Table[es$$["Data",i],{i,Length[SMSDomainDataNames]}]];
-	
-	{\[Xi],\[Eta],\[Zeta],wGauss}\[RightTee]Array[SMSReal[es$$["IntPoints",#1,IpIndex]]&,4];
-	
-	Ni\[DoubleRightTee]Switch[
+
+	wgp\[DoubleRightTee]SMSIO["Integration weight",Ig];
+	\[CapitalXi]={\[Xi],\[Eta],\[Zeta]}\[DoubleRightTee]SMSIO["Integration point",Ig];
+
+	\[DoubleStruckCapitalN]h\[DoubleRightTee]Switch[
 		$topology,
 		"T1",
 		{\[Xi],\[Eta],1-\[Xi]-\[Eta]},
@@ -75,33 +55,65 @@ ElementDefinitions[]:=Module[{},
 		1/2(1-\[Xi]^2)(1-\[Eta]), 1/2(1+\[Xi])(1-\[Eta]^2), 1/2(1-\[Xi]^2)(1+\[Eta]), 1/2(1-\[Xi])(1-\[Eta]^2)
 		}
 	];
-	
-	X\[RightTee]SMSFreeze[Ni.Xi];
-	Y\[RightTee]SMSFreeze[Ni.Yi];
-	Z\[RightTee]SMSFreeze[\[Zeta]];
-	
-	Jm\[DoubleRightTee]SMSD[{X,Y},{\[Xi],\[Eta]}];
-	Jmi\[DoubleRightTee]SMSSimplify[SMSInverse[Jm]];
-	Jd\[DoubleRightTee]Det[Jm];
-	\[Xi]\[Eta]\[Zeta]ToXYZ={{\[Xi],\[Eta]},{X,Y},Jmi};
 
-	fGauss\[DoubleRightTee]Jd*wGauss;
-	Ti\[DoubleRightTee]Flatten[dof];
-	T\[DoubleRightTee]Ni.Ti;
-	Tpi\[DoubleRightTee]Flatten[dofp];
-	Tp\[DoubleRightTee]Ni.Tpi;
-	
+	(* Nodal coordinates in real space *)
+	\[DoubleStruckCapitalX]IO\[DoubleRightTee]SMSIO["All coordinates"];
+	(* Gauss point coordinate in real space*)
+	\[DoubleStruckCapitalX]\[RightTee]SMSFreeze[Append[\[DoubleStruckCapitalN]h.\[DoubleStruckCapitalX]IO,\[Zeta]]];
+	{X,Y,Z}=\[DoubleStruckCapitalX];
+
+	{t,\[CapitalDelta]t}\[DoubleRightTee]SMSIO[{"Time","TimeIncrement"}];
+
+	(* Nodal DOF - current *)
+	\[DoubleStruckP]eIO\[DoubleRightTee]SMSIO["All DOFs"];
+	\[DoubleStruckP]e=Flatten[\[DoubleStruckP]eIO];
+	(* Nodal DOF - previous *)
+	\[DoubleStruckP]enIO\[DoubleRightTee]SMSIO["All DOFs n"];
+	\[DoubleStruckP]en=Flatten[\[DoubleStruckP]enIO];
+
+	(* temperature field *)
+	TIO=\[DoubleStruckP]eIO[[All,1]]; 
+	T\[DoubleRightTee]\[DoubleStruckCapitalN]h.TIO;
+	TnIO=\[DoubleStruckP]enIO[[All,1]]; 
+	Tn\[DoubleRightTee]\[DoubleStruckCapitalN]h.TnIO;
+
+	(* Approximate data for aluminium. Assumming kg/m/s unit system.*)
+	{kt0,kt1,kt2}\[DoubleRightTee]SMSIO["Domain data",{
+		"kt0"-> {"kt0 - conductivity (constant term)",220.},
+		"kt1"-> {"kt1 - conductivity (linear term)",0.},
+		"kt2"-> {"kt2 - conductivity (quadratic term)",0.}
+	}];
+	{rho0,rho1,rho2}\[DoubleRightTee]SMSIO["Domain data",{
+		"rho0"-> {"rho0 - density (constant term)",2700.},
+		"rho1"-> {"rho1 - density (linear term)",0.},
+		"rho2"-> {"rho2 - density (quadratic term)",0.}
+	}];
+	{cp0,cp1,cp2}\[DoubleRightTee]SMSIO["Domain data",{
+		"cp0"-> {"cp0 - specific heat (constant term)",900.},
+		"cp1"-> {"cp1 - specific heat (linear term)",0.},
+		"cp2"-> {"cp2 - specific heat (quadratic term)",0.}
+	}];
+	{Q}\[DoubleRightTee]SMSIO["Domain data",{
+		"Q"-> {"Q - heat source",0.}
+	}];
+
 	kt \[DoubleRightTee] kt0 + kt1*T + kt2*T^2;
 	rho \[DoubleRightTee] rho0 + rho1*T + rho2*T^2;
 	cp \[DoubleRightTee] cp0 + cp1*T + cp2*T^2;
 	
-	\[CapitalDelta]T\[DoubleRightTee]SMSD[T,{X,Y,Z},"Dependency"->\[Xi]\[Eta]\[Zeta]ToXYZ];
-	(* This use of SMSMax avoids division by 0 in the first analysis step if
-	we want to record initial state at time==0. Small value insteadof \[CapitalDelta]t is chosen arbitrarily. *)
-	\[Rho]\[CapitalDelta]T\[DoubleRightTee]SMSFreeze[1/SMSMax[\[CapitalDelta]t,10^-6]*rho*cp*(T-Tp)];
-	constant={\[Rho]\[CapitalDelta]T};
+	(* Kinematics *)
+	\[DoubleStruckCapitalJ]e\[DoubleRightTee]SMSD[\[DoubleStruckCapitalX],\[CapitalXi]]; 
+	Jed\[DoubleRightTee]SMSDet[\[DoubleStruckCapitalJ]e];
+	\[Xi]\[Eta]\[Zeta]ToXYZ={\[CapitalXi],\[DoubleStruckCapitalX],SMSSimplify@SMSInverse[\[DoubleStruckCapitalJ]e]};
+
+	fGauss\[DoubleRightTee]Jed*wgp;
+
+	\[DoubleStruckCapitalD]T\[DoubleRightTee]SMSD[T,\[DoubleStruckCapitalX],"Dependency"->\[Xi]\[Eta]\[Zeta]ToXYZ];
+	DTDt\[DoubleRightTee](T-Tn)/\[CapitalDelta]t;
+	bT\[DoubleRightTee]SMSFreeze[cp*rho*DTDt+Q];
+	constant={bT};
 	
-	\[CapitalPi]\[DoubleRightTee](kt*\[CapitalDelta]T.\[CapitalDelta]T)/2+\[Rho]\[CapitalDelta]T*T-T*Q;
+	W\[DoubleRightTee](kt*\[DoubleStruckCapitalD]T.\[DoubleStruckCapitalD]T)/2+bT*T;
 ];
 
 
@@ -110,22 +122,21 @@ ElementDefinitions[]:=Module[{},
 
 
 SMSStandardModule["Tangent and residual"];
+
+SMSDo[Ig,1,SMSIO["No. integration points"]];
+
+	ElementDefinitions[];
 	
-	NoIp\[RightTee]SMSInteger[es$$["id","NoIntPoints"]];
-	
-	SMSDo[IpIndex,1,NoIp];
-		
-		ElementDefinitions[];
-		
-		SMSDo[i,1,Length[Ti]];
-			Rg\[DoubleRightTee]fGauss*SMSD[\[CapitalPi], Ti, i, "Constant"->constant];
-			SMSExport[SMSResidualSign*Rg,p$$[i],"AddIn"->True];
-			SMSDo[j,If[SMSSymmetricTangent,i,1],Length[Ti]];		
-				Kt=SMSD[Rg, Ti, j];
-				SMSExport[Kt,s$$[i,j],"AddIn"->True];
-			SMSEndDo[];
+	SMSDo[i,1,SMSNoDOFGlobal];
+		(* Assuming unit thickness. *)
+		Rg\[DoubleRightTee]fGauss*SMSD[W,\[DoubleStruckP]e,i,"Constant"->SMSVariables[constant]];
+		SMSExport[SMSResidualSign*Rg,p$$[i],"AddIn"->True];
+		SMSDo[j,If[SMSSymmetricTangent,i,1],SMSNoDOFGlobal];
+			Kg\[DoubleRightTee]SMSD[Rg,\[DoubleStruckP]e,j];
+			SMSExport[Kg,s$$[i,j],"AddIn"-> True];
 		SMSEndDo[];
 	SMSEndDo[];
+SMSEndDo[];(* end integration point loop *)
 
 
 (* ::Subsection:: *)
@@ -133,37 +144,21 @@ SMSStandardModule["Tangent and residual"];
 
 
 SMSStandardModule["Postprocessing"];
-	
-	NoIp\[RightTee]SMSInteger[es$$["id","NoIntPoints"]];
-	
-	GPlotQuantities={};
-	NPlotQuantities={};
-	
-	SMSDo[IpIndex,1,NoIp];
-		
-		ElementDefinitions[];
-		
-		If[
-			GPlotQuantities=!={},
-			SMSGPostNames=GPlotQuantities[[All,1]];
-			SMSExport[GPlotQuantities[[All,2]],gpost$$[IpIndex,#1]&];
-		];
-	SMSEndDo[];
-	
-	NPlotQuantities={{"Temperature",Ti}};
-	
-	If[
-		NPlotQuantities=!={},
-		SMSNPostNames=NPlotQuantities[[All,1]];
-		SMSExport[NPlotQuantities[[All,2]],npost$$[#2,#1]&];
-	];
+
+(* nodal post-processing *)
+{temperature}\[DoubleRightTee]Transpose[SMSIO["All DOFs"]];
+SMSIO[
+	{"Temperature"->temperature},
+	"Export to",
+	"Nodal point"
+];
 
 
 (* ::Subsection:: *)
 (*Code generation*)
 
 
-SMSMainTitle="Heat conduction (non-stationary) element. \n Temperature dependent material properties.";
+SMSMainTitle="Transient heat conduction element.";
 
 
 SMSWrite[];
